@@ -2,6 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using JetBrains.Annotations;
 
 public class FactionDropDown : MonoBehaviour
 {
@@ -31,5 +32,11 @@ public class FactionDropDown : MonoBehaviour
         DeckBuilderController.Instance.ChangeFaction(selectedFaction);
 
 
+     
+    }
+
+    public void Refresh()
+    {
+        dropdown.RefreshShownValue();
     }
 }

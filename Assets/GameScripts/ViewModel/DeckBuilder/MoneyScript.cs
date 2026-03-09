@@ -9,7 +9,7 @@ public class MoneyScript : MonoBehaviour
     private void OnEnable()
     {
         DeckBuilderController.Instance.OnMoneyChanged += UpdateText;
-        UpdateText(DeckBuilderController.Instance.CurrentDeck.GETMONEY);
+        UpdateText(DeckBuilderController.Instance.DeckInBuilding.GETMONEY);
     }
 
     private void OnDisable()

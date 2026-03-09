@@ -18,10 +18,12 @@ public class Deck
     [SerializeField] private int Money = 100000;
     [SerializeField] private string name;
     [SerializeField] private List<UnitTypes> starterDeck = new();
+
     public string NAME
     {
         get => name;
         set => name = value;
+
     }
     public event Action<int> OnMoneyChanged;
     #endregion
@@ -38,12 +40,14 @@ public class Deck
         this.starterDeck = units;
         this.faction=faction;
         this.id = Guid.NewGuid().ToString();
+        name = "";
     }
     public Deck()
     {
         this.starterDeck = new List<UnitTypes>();
         this.faction = Factions.Human;
         this.id = Guid.NewGuid().ToString();
+        name = "";
     }
 
     public int GETMONEY => Money;
@@ -86,13 +90,6 @@ public class Deck
         }
         return count;
 
-    }
-    public void ClearDeck() 
-    {
-        
-        starterDeck = new List<UnitTypes>();
-        NAME = null;
-        Money = basealue;
     }
 
     #region Add&RemoveUnits

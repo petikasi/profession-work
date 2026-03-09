@@ -23,33 +23,35 @@ public class ScrollViewScript : MonoBehaviour
     private void OnEnable()
     {
         DeckBuilderController.Instance.OnFactionChanged += Reload;
+        LoadUnitsView();
     }
 
     private void OnDisable()
     {
         DeckBuilderController.Instance.OnFactionChanged -= Reload;
+        Clear();
     }
 
-    public void Start()
-    {
-        LoadUnitsView();
-    }
 
     private void LoadUnitsView()
     {
+        foreach (Transform child in UnitPanelParent)
+        {
+            Destroy(child.gameObject);
+        }
         foreach (UnitTypes unitType in Enum.GetValues(typeof(UnitTypes)))
         {
-            string name = DeckBuilderController.Instance.CurrentDeck.FactionsGet.ToString() + " "+ unitType.ToString();
+            string name = DeckBuilderController.Instance.DeckInBuilding.FactionsGet.ToString() + " "+ unitType.ToString();
             GameObject unitpanelGO = Instantiate(UnitPanelPref, UnitPanelParent);
             unitpanelGO.name = UnitPanelPref.name + " " + unitType.ToString();
             UnitPanelItem panelUI = unitpanelGO.GetComponent<UnitPanelItem>();
-            UnitSprite sprite = unitSprites.Find(e => e.ByUnitAndFaction(DeckBuilderController.Instance.CurrentDeck.FactionsGet, unitType));
+            UnitSprite sprite = unitSprites.Find(e => e.ByUnitAndFaction(DeckBuilderController.Instance.DeckInBuilding.FactionsGet, unitType));
             if (sprite != null) {
                 
                 panelUI.Initialize(
                name,
                sprite.GetSprite,
-               () => DeckBuilderController.Instance.CurrentDeck.GetCountUnit(unitType),
+               () => DeckBuilderController.Instance.DeckInBuilding.GetCountUnit(unitType),
                () => DeckBuilderController.Instance.Add(unitType),
                () => DeckBuilderController.Instance.Remove(unitType)
             );
@@ -63,20 +65,19 @@ public class ScrollViewScript : MonoBehaviour
 
 
     }
-    private void Reload(Factions faction)
-    {
-        DeckBuilderController.Instance.CurrentDeck.ClearDeck();
-        Clear();
-        LoadUnitsView();
-    }
-
-    private void Clear()
+    public void Clear() 
     {
         foreach (Transform child in UnitPanelParent)
         {
             Destroy(child.gameObject);
         }
     }
+    public void Reload()
+    {
+ 
+        LoadUnitsView();
+    }
+
     private void AddSpritesToList() 
     {
 

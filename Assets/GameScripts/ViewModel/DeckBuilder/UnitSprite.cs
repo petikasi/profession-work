@@ -5,9 +5,9 @@ using UnityEngine;
 [System.Serializable]
 public class UnitSprite
 {
-    private Factions faction;
-    private UnitTypes unit;
-    private Sprite sprite;
+    private readonly Factions faction;
+    private readonly UnitTypes unit;
+    private readonly Sprite sprite;
     public UnitSprite(Factions faction,UnitTypes unit, Sprite sprite) 
     {
         this.faction = faction;

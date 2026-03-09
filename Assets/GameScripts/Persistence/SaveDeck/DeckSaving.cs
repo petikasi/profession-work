@@ -10,36 +10,54 @@ namespace  GameScripts.Persistence
 
     public class DeckSaving
     {
-        private static readonly string path = Application.persistentDataPath + "/decks.json";
+        private static string DeckFolder =>
+        Path.Combine(Application.persistentDataPath, "Decks");
 
-        public static void SavingDecks(Deck deck, DeckList deckList)
+        public static void SaveDeckList(DeckList deckList)
         {
+            if (!Directory.Exists(DeckFolder))
+                Directory.CreateDirectory(DeckFolder);
 
-            if (File.Exists(path))
+            foreach (Deck deck in deckList.decks)
             {
-                string existingJson = File.ReadAllText(path);
-                deckList = JsonUtility.FromJson<DeckList>(existingJson);
+                SaveDeck(deck);
             }
+        }
 
-            deckList ??= new DeckList();
+        public static void SaveDeck(Deck deck)
+        {
+            if (!Directory.Exists(DeckFolder))
+                Directory.CreateDirectory(DeckFolder);
 
-            deckList.decks.Add(deck);
-            string json = JsonUtility.ToJson(deckList, true);
+            string path = Path.Combine(DeckFolder, deck.ID + ".json");
+            string json = JsonUtility.ToJson(deck);
+            Debug.Log(json);
             File.WriteAllText(path, json);
+
+            Debug.Log($"Saved deck {deck.NAME} to {path}");
         }
 
 
 
-        public static DeckList LoadDeck()
+        public static DeckList LoadDeckList()
         {
-            if (!File.Exists(path))
+            DeckList deckList = new();
+
+            string folder = Path.Combine(Application.persistentDataPath, "Decks");
+
+            if (!Directory.Exists(folder))
+                return deckList;
+
+            string[] files = Directory.GetFiles(folder, "*.json");
+
+            foreach (string file in files)
             {
-                Debug.Log("No save file found.");
-                return null;
+                string json = File.ReadAllText(file);
+                Deck deck = JsonUtility.FromJson<Deck>(json);
+                deckList.decks.Add(deck);
             }
 
-            string json = File.ReadAllText(path);
-            return JsonUtility.FromJson<DeckList>(json);
+            return deckList;
         }
 
 

@@ -11,5 +11,7 @@ namespace Assets.GameScripts.Model.Deckmaker.Deks
     public class DeckList
     {
         [SerializeField] public List<Deck> decks = new();
+
+
     }
 }

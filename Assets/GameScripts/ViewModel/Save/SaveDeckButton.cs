@@ -13,9 +13,10 @@ public class SaveDeckButton : MonoBehaviour
         saveButtonObj.onClick.RemoveAllListeners();
         saveButtonObj.onClick.AddListener(()
             =>{
-                if (DeckBuilderController.Instance.CurrentDeck.NAME != null) 
+                Debug.Log(DeckBuilderController.Instance.DeckInBuilding.NAME);
+                if (DeckBuilderController.Instance.DeckInBuilding.NAME != null) 
                 {
-
+                    Debug.Log("Saving started");
                     DeckBuilderController.Instance.InitializeSave();
                 }
                 
