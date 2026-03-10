@@ -49,8 +49,8 @@ namespace Assets.GameScripts.ViewModel.DeckEditor
 
         private void OnDisable()
         {
-            DeckManagerController.Instance.RefreshDecklist += ShowPage;
-            DeckManagerController.Instance.Selecteddeck += SetModifyAndRenameButton;
+            DeckManagerController.Instance.RefreshDecklist -= ShowPage;
+            DeckManagerController.Instance.Selecteddeck -= SetModifyAndRenameButton;
             nextButton.onClick.RemoveListener(NextPage);
             previousButton.onClick.RemoveListener(PreviousPage);
             ClearPage();
@@ -59,6 +59,8 @@ namespace Assets.GameScripts.ViewModel.DeckEditor
 
         public void ShowPage()
         {
+
+            ClearPage();
 
             int startIndex = currentPage * itemsPerPage;
             int endIndex = Mathf.Min(startIndex + itemsPerPage, DeckManagerController.Instance.DeckList.decks.Count);

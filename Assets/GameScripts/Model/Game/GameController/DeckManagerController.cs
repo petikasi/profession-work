@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Assets.GameScripts.Model.Deckmaker.Deks;
 using UnityEngine;
 using GameScripts.Persistence;
+using Assets.GameScripts.Persistence.RemoveDeck;
 
 namespace Assets.GameScripts.Model.Game.GameController
 {
@@ -43,14 +44,14 @@ namespace Assets.GameScripts.Model.Game.GameController
 
         }
 
-
-        public void RemoveDeckToDeckList(Deck d)
+        public void RemoveSelectedDeck() 
         {
-            if (DeckList.decks.Contains(d))
+            if (DeckList.decks.Contains(SelectedDeck)) 
             {
-
+                DeckList.decks.Remove(SelectedDeck);
+                DeckRemoving.DeleteDeck(SelectedDeck.ID);
+                RefreshDecklist?.Invoke();
             }
-
         }
 
         public void Choosendeck(Deck d) 
