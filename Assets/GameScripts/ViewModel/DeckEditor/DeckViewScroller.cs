@@ -1,14 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Assets.GameScripts.Model.Deckmaker.Deks;
 using Assets.GameScripts.Model.Game.GameController;
-using GameScripts.Model.Units;
-using NUnit.Framework;
-using TMPro;
+using Assets.GameScripts.ViewModel.Graphic;
 using UnityEngine;
 using UnityEngine.UI;
-using static UnityEngine.InputSystem.LowLevel.InputStateHistory;
 
 namespace Assets.GameScripts.ViewModel.DeckEditor
 {
@@ -29,8 +25,7 @@ namespace Assets.GameScripts.ViewModel.DeckEditor
 
         private void Awake()
         {
-            factionSprites = new List<FactionSprites>();
-            AddSpritesToList();
+            factionSprites = PictureLoder.Instance.GETFACTIONPICTURES;
         }
 
 
@@ -38,7 +33,7 @@ namespace Assets.GameScripts.ViewModel.DeckEditor
         private void OnEnable()
         {
             DeckManagerController.Instance.RefreshDecklist += ShowPage;
-            DeckManagerController.Instance.Selecteddeck += SetModifyAndRenameButton;
+            DeckManagerController.Instance.Selecteddeck += ShowModifyAndRenameButton;
             nextButton.onClick.AddListener(NextPage);
             previousButton.onClick.AddListener(PreviousPage);
             modifyButton.gameObject.SetActive(false);
@@ -50,10 +45,11 @@ namespace Assets.GameScripts.ViewModel.DeckEditor
         private void OnDisable()
         {
             DeckManagerController.Instance.RefreshDecklist -= ShowPage;
-            DeckManagerController.Instance.Selecteddeck -= SetModifyAndRenameButton;
+            DeckManagerController.Instance.Selecteddeck -= ShowModifyAndRenameButton;
             nextButton.onClick.RemoveListener(NextPage);
             previousButton.onClick.RemoveListener(PreviousPage);
             ClearPage();
+            HideModifyAndRenameButton();
 
         }
 
@@ -72,7 +68,7 @@ namespace Assets.GameScripts.ViewModel.DeckEditor
             foreach (var deck in pageDecks)
             {
                 GameObject deckpanel = Instantiate(itemPrefab, gridParent);
-                DeckPanel deckpanelUI = deckpanel.GetComponent<DeckPanel>();
+                MultiDeckPanel deckpanelUI = deckpanel.GetComponent<MultiDeckPanel>();
                 FactionSprites factionsprite= factionSprites.Find(e => e.ByFaction(deck.FactionsGet));
                 deckpanelUI.Initialize(deck,factionsprite.GetSprite);
                         
@@ -90,7 +86,7 @@ namespace Assets.GameScripts.ViewModel.DeckEditor
 
             foreach (Transform child in gridParent)
             {
-                Destroy(child.gameObject);
+                child.gameObject.SetActive(false);
             }
 
         }
@@ -107,31 +103,18 @@ namespace Assets.GameScripts.ViewModel.DeckEditor
             ShowPage();
         }
 
-        private void SetModifyAndRenameButton() 
+        private void ShowModifyAndRenameButton() 
         {
             modifyButton.gameObject.SetActive(true);
             renameButton.gameObject.SetActive(true);
             deleteButton.gameObject.SetActive(true);
         }
-        private void AddSpritesToList()
+
+        private void HideModifyAndRenameButton()
         {
-
-            foreach (Factions fac in Enum.GetValues(typeof(Factions)))
-            {
-
-                string key = $"FactionPictures/{fac}";
-                Sprite sprite = Resources.Load<Sprite>(key);
-                if (sprite == null)
-                {
-                    Debug.LogWarning($"Sprite for {fac} not found at key: {key}");
-                }
-                factionSprites.Add(
-                    new FactionSprites(fac, sprite)
-                );
-
-                Debug.Log($"{fac} faction finished loading into memory");
-            }
-
+            modifyButton.gameObject.SetActive(false);
+            renameButton.gameObject.SetActive(false);
+            deleteButton.gameObject.SetActive(false);
         }
 
 

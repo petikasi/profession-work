@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Assets.GameScripts.ViewModel.Graphic;
 using Mono.Cecil.Cil;
 using TMPro;
 using UnityEditor;
@@ -16,8 +17,7 @@ public class ScrollViewScript : MonoBehaviour
 
     public void Awake()
     {
-        unitSprites= new List<UnitSprite> ();
-        AddSpritesToList();
+        unitSprites= PictureLoder.Instance.GETUNITPICTURES;
     }
 
     private void OnEnable()
@@ -78,30 +78,7 @@ public class ScrollViewScript : MonoBehaviour
         LoadUnitsView();
     }
 
-    private void AddSpritesToList() 
-    {
-
-        foreach (Factions fac in Enum.GetValues(typeof( Factions))) 
-        {
-            
-            foreach (UnitTypes unitType in Enum.GetValues(typeof(UnitTypes)))
-            {
-                string key = $"UnitPictures/{fac}/{unitType}"; ;
-                Sprite sprite = Resources.Load<Sprite>(key);
-                if (sprite == null) 
-                { 
-
-                }
-                unitSprites.Add(
-                    new UnitSprite(fac, unitType, sprite)
-                );
-
-            }
-
-            Debug.Log($"{fac} finished loading into memory");
-        }
-
-    }
+ 
 
 
 

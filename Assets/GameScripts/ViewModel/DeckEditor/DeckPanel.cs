@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class DeckPanel : MonoBehaviour, IPointerClickHandler
+public class MultiDeckPanel : MonoBehaviour, IPointerClickHandler
 {
 
     [Header("UI")]
