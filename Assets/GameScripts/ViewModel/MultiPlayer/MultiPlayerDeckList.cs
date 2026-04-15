@@ -1,21 +1,19 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+using System.Collections.Generic;
 using Assets.GameScripts.Model.Game.GameController;
+using Assets.GameScripts.ViewModel.DeckEditor;
 using Assets.GameScripts.ViewModel.Graphic;
 using Assets.GameScripts.ViewModel.PrefabsAndAbstracts;
 using UnityEngine;
-using UnityEngine.UI;
 
-namespace Assets.GameScripts.ViewModel.DeckEditor
+
+namespace Assets.GameScripts.ViewModel.MutliPlayer 
 {
-    public  class DeckViewScroller : DeckListerAbstract<Deck>
+    public class MultiPlayerDeckList : DeckListerAbstract<Deck>
     {
-        [SerializeField] Button modifyButton;
-        [SerializeField] Button deleteButton;
 
         private List<FactionSprites> factionSprites;
 
-        private  void Awake()
+        private void Awake()
         {
             factionSprites = PictureLoder.Instance.GETFACTIONPICTURES;
         }
@@ -25,11 +23,8 @@ namespace Assets.GameScripts.ViewModel.DeckEditor
         protected override void OnEnable()
         {
             base.OnEnable();
-            
-            DeckManagerController.Instance.RefreshDecklist += base.CreatePage;
-            DeckManagerController.Instance.Selecteddeck += ShowModifyAndRenameButton;
 
-            HideModifyAndRenameButton();
+            DeckManagerController.Instance.RefreshDecklist += base.CreatePage;
         }
 
         protected override void OnDisable()
@@ -37,9 +32,6 @@ namespace Assets.GameScripts.ViewModel.DeckEditor
             base.OnDisable();
 
             DeckManagerController.Instance.RefreshDecklist -= base.CreatePage;
-            DeckManagerController.Instance.Selecteddeck -= ShowModifyAndRenameButton;
-
-            HideModifyAndRenameButton();
 
         }
 
@@ -58,18 +50,6 @@ namespace Assets.GameScripts.ViewModel.DeckEditor
             ui.Initialize(deck, factionSprite?.GetSprite);
         }
 
-        private void ShowModifyAndRenameButton()
-        {
-            modifyButton.gameObject.SetActive(true);
-            deleteButton.gameObject.SetActive(true);
-        }
-
-        private void HideModifyAndRenameButton()
-        {
-            modifyButton.gameObject.SetActive(false);
-            deleteButton.gameObject.SetActive(false);
-        }
-
-
     }
+
 }

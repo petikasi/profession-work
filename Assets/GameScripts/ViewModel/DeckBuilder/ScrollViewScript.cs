@@ -35,10 +35,7 @@ public class ScrollViewScript : MonoBehaviour
 
     private void LoadUnitsView()
     {
-        foreach (Transform child in UnitPanelParent)
-        {
-            Destroy(child.gameObject);
-        }
+        Clear();
         foreach (UnitTypes unitType in Enum.GetValues(typeof(UnitTypes)))
         {
             string name = DeckBuilderController.Instance.DeckInBuilding.FactionsGet.ToString() + " "+ unitType.ToString();

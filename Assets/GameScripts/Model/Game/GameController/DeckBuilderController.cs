@@ -17,15 +17,22 @@ public class DeckBuilderController : MonoBehaviour
             Destroy(gameObject);
             return;
         }
-        
+
         Instance = this;
     }
 
-    public void ChangeFaction(Factions f) 
+    public void ChangeFaction(Factions f)
     {
         Debug.Log(f.ToString());
         DeckInBuilding.ChangeFaction(f);
         OnFactionChanged.Invoke();
+        OnMoneyChanged.Invoke(DeckInBuilding.GETMONEY);
+    }
+
+    public void ReciveDeckToModif(Deck deck)
+    {
+        DeckInBuilding = deck;
+        OnFactionChanged?.Invoke();
         OnMoneyChanged.Invoke(DeckInBuilding.GETMONEY);
     }
 
@@ -55,6 +62,9 @@ public class DeckBuilderController : MonoBehaviour
 
         }
     }
-
+    public void SetDeckToEmpty ()
+    {
+        DeckInBuilding = new Deck();
+    }
 
 }

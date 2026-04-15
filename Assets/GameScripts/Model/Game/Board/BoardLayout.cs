@@ -7,9 +7,9 @@ using UnityEngine.TestTools;
 
 public class BoardLayout :MonoBehaviour
 {
-    private int WIDTHOFTHETABLE = 60;
-    private int HEIGHTOFTHETABLE = 40;
-    private int SIZEOFATILE = 10;
+    private readonly int WIDTHOFTHETABLE = 60;
+    private readonly int HEIGHTOFTHETABLE = 40;
+    private readonly int SIZEOFATILE = 10;
     private bool ISGENERATED=false;
     private Deck currentDeck;
 
@@ -39,14 +39,14 @@ public class BoardLayout :MonoBehaviour
         UnitTypes.BasicMelee
         };
 
-        Deck deck = new Deck(myUnits,Factions.Human);
+        Deck deck = new(myUnits,Factions.Human);
         List<BaseUnit> baseUnits = GenerateDecks(deck);
 
     }
     public void CreateDeck(Factions fact, List<UnitTypes> list)
     {
 
-        Deck deck = new Deck(list, fact);
+        Deck deck = new(list, fact);
         currentDeck = deck;
 
     }
@@ -58,10 +58,10 @@ public class BoardLayout :MonoBehaviour
         {
             for (int n = 0; n < tileCountY; n++)
             {
-                GameObject tile = new GameObject($"X:{i}, Y:{n}");
+                GameObject tile = new($"X:{i}, Y:{n}");
                 tile.transform.parent = transform;
 
-                Mesh mesh = new Mesh();
+                Mesh mesh = new();
 
                 tile.AddComponent<MeshFilter>().mesh = mesh;
                 tile.AddComponent<MeshRenderer>();
@@ -102,7 +102,7 @@ public class BoardLayout :MonoBehaviour
 
     private List<BaseUnit> GenerateDecks(Deck deck) 
     {
-        List<BaseUnit> baseunits = new List<BaseUnit>();
+        List<BaseUnit> baseunits = new();
         int i = 1;
         foreach (UnitTypes a in deck.GetHoleListUnit())
         {

@@ -19,7 +19,7 @@ namespace Assets.GameScripts.Model.Game.GameController
         public event Action RefreshDecklist;
         public event Action Selecteddeck;
 
-        void Start()
+        void Awake()
         {
             if (Instance != null && Instance != this)
             {
@@ -58,6 +58,11 @@ namespace Assets.GameScripts.Model.Game.GameController
         {
             SelectedDeck = d;
             Selecteddeck?.Invoke();
+        }
+        public void AddSelectedDeckToDeckBuilder() 
+        {
+            DeckBuilderController.Instance.ReciveDeckToModif(SelectedDeck);
+
         }
     }
 }

@@ -6,7 +6,7 @@ using JetBrains.Annotations;
 
 public class FactionDropDown : MonoBehaviour
 {
-    [SerializeField] string[] UnitPanelPrefParent;
+    [SerializeField] string[] UnitPanelPrefParent;//possible options
     [SerializeField] TMP_Dropdown dropdown;
     void Start()
     {
