@@ -1,9 +1,9 @@
-﻿using UnityEngine.UI;
-using UnityEngine;
+﻿using UnityEngine;
+using UnityEngine.UI;
 
 namespace Assets.GameScripts.ViewModel.DeckBuilder
 {
-    public class BackButtonHandler:MonoBehaviour
+    public class BackButtonHandler : MonoBehaviour
     {
 
         [SerializeField] private Button backButton;
@@ -12,11 +12,12 @@ namespace Assets.GameScripts.ViewModel.DeckBuilder
         {
             backButton.onClick.RemoveAllListeners();
             backButton.onClick.AddListener(()
-                => {
-                    Debug.Log("Back from Deckbuilder to deckmanager");
-                    DeckBuilderController.Instance.InitializeSave();
+                =>
+            {
+                Debug.Log("Back from Deckbuilder to deckmanager");
+                DeckBuilderController.Instance.SetDeckToEmpty();
 
-                }
+            }
             );
         }
 

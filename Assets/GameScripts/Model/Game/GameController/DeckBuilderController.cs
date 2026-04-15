@@ -39,9 +39,20 @@ public class DeckBuilderController : MonoBehaviour
     public void InitializeSave()
     {
         Debug.Log($"Begin Saving as {DeckInBuilding.NAME}");
-        DeckSaving.SaveDeck(DeckInBuilding);
-        DeckManagerController.Instance.AddDeckToDeckList(DeckInBuilding);
+        if (DeckManagerController.Instance.DeckList.SearchByID(DeckInBuilding.ID))
+        {
+            DeckManagerController.Instance.DeckList.ReplaceDeckWithModifiedDack(DeckInBuilding);
+            DeckSaving.SaveDeckList(DeckManagerController.Instance.DeckList);
+
+        }
+        else 
+        {
+            DeckSaving.SaveDeck(DeckInBuilding);
+            DeckManagerController.Instance.AddDeckToDeckList(DeckInBuilding);
+
+        }
         DeckInBuilding = new Deck();
+
     }
 
     public void Add(UnitTypes unit)
