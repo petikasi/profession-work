@@ -19,6 +19,7 @@ public class BoardLayout :MonoBehaviour
     [Header("Prefabs")]
     [SerializeField] private GameObject[] prefabs;
     [SerializeField] private Material[] teammaterials;
+    [SerializeField] private Material grassMaterial;
 
     public void GenerateBoardLayout()
     {
@@ -51,7 +52,7 @@ public class BoardLayout :MonoBehaviour
 
     }
 
-    private void GenerateMapTiles(int tileCountX, int tileCountY, float tileWidth) 
+    private void GenerateMapTiles(int tileCountX, int tileCountY, float tileWidth)
     {
         tiles = new GameObject[tileCountX, tileCountY];
         for (int i = 0; i < tileCountX; i++)
@@ -62,9 +63,11 @@ public class BoardLayout :MonoBehaviour
                 tile.transform.parent = transform;
 
                 Mesh mesh = new();
-
                 tile.AddComponent<MeshFilter>().mesh = mesh;
-                tile.AddComponent<MeshRenderer>();
+
+                // Assign the grass material to the renderer
+                MeshRenderer renderer = tile.AddComponent<MeshRenderer>();
+                renderer.material = grassMaterial;
 
                 float x = i * tileWidth;
                 float y = n * tileWidth;
@@ -75,9 +78,17 @@ public class BoardLayout :MonoBehaviour
                 vertices[2] = new Vector3(x + tileWidth, 0f, y);
                 vertices[3] = new Vector3(x + tileWidth, 0f, y + tileWidth);
 
+                // NEW: UV Mapping (tells the texture how to wrap)
+                Vector2[] uv = new Vector2[4];
+                uv[0] = new Vector2(0, 0);
+                uv[1] = new Vector2(0, 1);
+                uv[2] = new Vector2(1, 0);
+                uv[3] = new Vector2(1, 1);
+
                 int[] triangles = { 0, 1, 2, 1, 3, 2 };
 
                 mesh.vertices = vertices;
+                mesh.uv = uv; // Don't forget this!
                 mesh.triangles = triangles;
 
                 mesh.RecalculateNormals();
@@ -86,10 +97,6 @@ public class BoardLayout :MonoBehaviour
                 tiles[i, n] = tile;
             }
         }
-
-
-
-
     }
 
 

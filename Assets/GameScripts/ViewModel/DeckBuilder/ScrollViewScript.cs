@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Assets.GameScripts.Model.Units;
 using Assets.GameScripts.ViewModel.Graphic;
 using Mono.Cecil.Cil;
 using TMPro;
@@ -38,7 +39,7 @@ public class ScrollViewScript : MonoBehaviour
         Clear();
         foreach (UnitTypes unitType in Enum.GetValues(typeof(UnitTypes)))
         {
-            string name = DeckBuilderController.Instance.DeckInBuilding.FactionsGet.ToString() + " "+ unitType.ToString();
+            string name = UnitNames.GetNameForUnit(DeckBuilderController.Instance.DeckInBuilding.FactionsGet, unitType);
             GameObject unitpanelGO = Instantiate(UnitPanelPref, UnitPanelParent);
             unitpanelGO.name = UnitPanelPref.name + " " + unitType.ToString();
             UnitPanelItem panelUI = unitpanelGO.GetComponent<UnitPanelItem>();
