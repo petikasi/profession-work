@@ -1,4 +1,4 @@
-using System;
+
 using System.Collections.Generic;
 using NUnit.Framework;
 using Unity.VisualScripting;
@@ -20,6 +20,10 @@ public class BoardLayout :MonoBehaviour
     [SerializeField] private GameObject[] prefabs;
     [SerializeField] private Material[] teammaterials;
     [SerializeField] private Material grassMaterial;
+    [Header("Decorations")]
+    [SerializeField] private GameObject[] flowerPrefabs; // Change this to an array
+    [UnityEngine.Range(0, 1)]
+    [SerializeField] private float flowerChance = 0.2f;
 
     public void GenerateBoardLayout()
     {
@@ -95,6 +99,10 @@ public class BoardLayout :MonoBehaviour
                 mesh.RecalculateBounds();
 
                 tiles[i, n] = tile;
+                if (Random.value < flowerChance)
+                {
+                    SpawnFlowerOnTile(i, n, tileWidth);
+                }
             }
         }
     }
@@ -133,6 +141,24 @@ public class BoardLayout :MonoBehaviour
         }
         return baseunits;
         
+    }
+
+    private void SpawnFlowerOnTile(int i, int n, float tileWidth)
+    {
+        float xPos = i * tileWidth + (tileWidth / 2f);
+        float zPos = n * tileWidth + (tileWidth / 2f);
+
+        // Choose a random flower from your list of 8
+        int randomIndex = UnityEngine.Random.Range(0, flowerPrefabs.Length);
+        GameObject selectedPrefab = flowerPrefabs[randomIndex];
+
+        Vector3 flowerPos = new Vector3(xPos, 0f, zPos);
+
+        GameObject flower = Instantiate(selectedPrefab, flowerPos, Quaternion.identity);
+        flower.transform.parent = transform;
+
+        // Random rotation makes the repeated 8 flowers look like a unique meadow
+        flower.transform.rotation = Quaternion.Euler(0, UnityEngine.Random.Range(0, 360), 0);
     }
 
 
