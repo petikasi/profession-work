@@ -260,6 +260,14 @@ MonoBehaviour:
   - {fileID: 2100000, guid: b391301c47109a144bbb6408e48da028, type: 2}
   - {fileID: 2100000, guid: 973635ff02379f4429b7df0543346d32, type: 2}
   grassMaterial: {fileID: 2100000, guid: bc688f85a29da6548a198a27784a8736, type: 2}
+  flowerPrefabs:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  flowerChance: 0.806
 --- !u!4 &46322519
 Transform:
   m_ObjectHideFlags: 0
