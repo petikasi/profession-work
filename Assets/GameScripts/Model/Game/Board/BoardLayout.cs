@@ -7,99 +7,100 @@ using UnityEngine.TestTools;
 
 public class BoardLayout :MonoBehaviour
 {
-    private readonly int WIDTHOFTHETABLE = 60;
-    private readonly int HEIGHTOFTHETABLE = 40;
-    private readonly int SIZEOFATILE = 10;
-    private bool ISGENERATED=false;
-    private Deck currentDeck;
+    [Header("Board Settings")]
+    [SerializeField] private  int widthOfTable = 60;
+    [SerializeField] private  int heightOfTable = 40;
+    [SerializeField] private  int sizeOfTile = 10;
 
-    private GameObject[,] tiles;
-
+    [Header("Materials")]
+    [SerializeField] private Material grassMaterial;
 
     [Header("Prefabs")]
-    [SerializeField] private GameObject[] prefabs;
-    [SerializeField] private Material[] teammaterials;
-    [SerializeField] private Material grassMaterial;
-    [Header("Decorations")]
-    [SerializeField] private GameObject[] flowerPrefabs; // Change this to an array
+    [SerializeField] private GameObject[] unitPrefabs;
+    [SerializeField] private GameObject[] flowerPrefabs;
+
+    [Header("Generation Settings")]
     [UnityEngine.Range(0, 1)]
     [SerializeField] private float flowerChance = 0.2f;
 
+    private GameObject[,] tiles;
+    private bool isGenerated = false;
+    private Deck currentDeck;
+
     public void GenerateBoardLayout()
     {
+        if (isGenerated) return;
+        isGenerated = true;
 
-        if (ISGENERATED) return;
-        ISGENERATED = true;
+        GenerateMapTiles(widthOfTable, heightOfTable, sizeOfTile);
 
-        GenerateMapTiles(WIDTHOFTHETABLE, HEIGHTOFTHETABLE, SIZEOFATILE);
-
+        // Example unit setup
         List<UnitTypes> myUnits = new()
         {
-        UnitTypes.BasicMelee,
-        UnitTypes.Ranged,
-        UnitTypes.AdvancedMelee,
-        UnitTypes.Wizard,
-        UnitTypes.Artillery,
-        UnitTypes.Special,
-        UnitTypes.BasicMelee
+            UnitTypes.BasicMelee,
+            UnitTypes.Ranged,
+            UnitTypes.AdvancedMelee,
+            UnitTypes.Wizard,
+            UnitTypes.Artillery,
+            UnitTypes.Special,
+            UnitTypes.BasicMelee
         };
 
-        Deck deck = new(myUnits,Factions.Human);
-        List<BaseUnit> baseUnits = GenerateDecks(deck);
-
-    }
-    public void CreateDeck(Factions fact, List<UnitTypes> list)
-    {
-
-        Deck deck = new(list, fact);
-        currentDeck = deck;
-
+        Deck deck = new(myUnits, Factions.Human);
+        //GenerateDecks(deck);
     }
 
     private void GenerateMapTiles(int tileCountX, int tileCountY, float tileWidth)
     {
         tiles = new GameObject[tileCountX, tileCountY];
+
         for (int i = 0; i < tileCountX; i++)
         {
             for (int n = 0; n < tileCountY; n++)
             {
-                GameObject tile = new($"X:{i}, Y:{n}");
+                // 1. Create Tile Object
+                GameObject tile = new($"Tile_{i}_{n}");
                 tile.transform.parent = transform;
 
+                // 2. Set up Mesh
                 Mesh mesh = new();
                 tile.AddComponent<MeshFilter>().mesh = mesh;
-
-                // Assign the grass material to the renderer
                 MeshRenderer renderer = tile.AddComponent<MeshRenderer>();
                 renderer.material = grassMaterial;
 
+                // 3. Calculate Positions
                 float x = i * tileWidth;
-                float y = n * tileWidth;
+                float z = n * tileWidth;
 
-                Vector3[] vertices = new Vector3[4];
-                vertices[0] = new Vector3(x, 0f, y);
-                vertices[1] = new Vector3(x, 0f, y + tileWidth);
-                vertices[2] = new Vector3(x + tileWidth, 0f, y);
-                vertices[3] = new Vector3(x + tileWidth, 0f, y + tileWidth);
+                Vector3[] vertices = new Vector3[]
+                {
+                    new (x, 0f, z),
+                    new (x, 0f, z + tileWidth),
+                    new (x + tileWidth, 0f, z),
+                    new (x + tileWidth, 0f, z + tileWidth)
+                };
 
-                // NEW: UV Mapping (tells the texture how to wrap)
-                Vector2[] uv = new Vector2[4];
-                uv[0] = new Vector2(0, 0);
-                uv[1] = new Vector2(0, 1);
-                uv[2] = new Vector2(1, 0);
-                uv[3] = new Vector2(1, 1);
+                Vector2[] uv = new Vector2[]
+                {
+                    new (0, 0),
+                    new (0, 1),
+                    new (1, 0),
+                    new (1, 1)
+                };
 
                 int[] triangles = { 0, 1, 2, 1, 3, 2 };
 
                 mesh.vertices = vertices;
-                mesh.uv = uv; // Don't forget this!
+                mesh.uv = uv;
                 mesh.triangles = triangles;
 
                 mesh.RecalculateNormals();
                 mesh.RecalculateBounds();
 
                 tiles[i, n] = tile;
-                if (Random.value < flowerChance)
+
+                // 4. Decoration Spawning
+                if (Random.value < flowerChance && flowerPrefabs.Length > 0)
                 {
                     SpawnFlowerOnTile(i, n, tileWidth);
                 }
@@ -107,58 +108,49 @@ public class BoardLayout :MonoBehaviour
         }
     }
 
-
-    private BaseUnit GeneratePiece(Factions faction, UnitTypes type) 
-    {
-
-        BaseUnit bs =  Instantiate(prefabs[(int)type-1], transform).GetComponent<BaseUnit>();
-        return bs;
-    }
-
-    private List<BaseUnit> GenerateDecks(Deck deck) 
-    {
-        List<BaseUnit> baseunits = new();
-        int i = 1;
-        foreach (UnitTypes a in deck.GetHoleListUnit())
-        {
-            BaseUnit bs = Instantiate(prefabs[(int) a-1], transform).GetComponent<BaseUnit>();
-            baseunits.Add(bs);
-            bs.X = i;
-            bs.Y = 0;
-            if (a== UnitTypes.BasicMelee)// ez azért van mert van egy hiba a prefabba ami azt csinálja, h az y tengelyen egyel lelyebb megy a 3D model
-            {
-                bs.transform.position = new Vector3(bs.X * SIZEOFATILE - (SIZEOFATILE / 2), 1, bs.Y * SIZEOFATILE + (SIZEOFATILE / 2));
-
-            }
-            else
-            {
-                bs.transform.position = new Vector3(bs.X * SIZEOFATILE - (SIZEOFATILE / 2), 0, bs.Y * SIZEOFATILE + (SIZEOFATILE / 2));
-            }
-                
-          
-            i++;
-
-        }
-        return baseunits;
-        
-    }
-
     private void SpawnFlowerOnTile(int i, int n, float tileWidth)
     {
+        // Center the flower on the tile
         float xPos = i * tileWidth + (tileWidth / 2f);
         float zPos = n * tileWidth + (tileWidth / 2f);
 
-        // Choose a random flower from your list of 8
-        int randomIndex = UnityEngine.Random.Range(0, flowerPrefabs.Length);
-        GameObject selectedPrefab = flowerPrefabs[randomIndex];
+        // Raise it slightly (0.01) to prevent "Z-Fighting" with the floor
+        Vector3 flowerPos = new(xPos, 0.01f, zPos);
 
-        Vector3 flowerPos = new Vector3(xPos, 0f, zPos);
+        // Pick random flower
+        GameObject randomFlower = flowerPrefabs[0];
 
-        GameObject flower = Instantiate(selectedPrefab, flowerPos, Quaternion.identity);
-        flower.transform.parent = transform;
+        GameObject flower = Instantiate(randomFlower, flowerPos, Quaternion.identity, transform);
 
-        // Random rotation makes the repeated 8 flowers look like a unique meadow
-        flower.transform.rotation = Quaternion.Euler(0, UnityEngine.Random.Range(0, 360), 0);
+        // Randomize rotation and slightly randomize scale for a natural look
+        flower.transform.rotation = Quaternion.Euler(0, Random.Range(0, 360), 0);
+        float randomScale = Random.Range(0.8f, 1.2f);
+        flower.transform.localScale *= randomScale;
+    }
+
+    private List<BaseUnit> GenerateDecks(Deck deck)
+    {
+        List<BaseUnit> spawnedUnits = new();
+        List<UnitTypes> list = deck.GetHoleListUnit();
+
+        for (int i = 0; i < list.Count; i++)
+        {
+            UnitTypes type = list[i];
+            BaseUnit bs = Instantiate(unitPrefabs[(int)type - 1], transform).GetComponent<BaseUnit>();
+
+            bs.X = i + 1; // Start at 1 per your original logic
+            bs.Y = 0;
+
+            // Positioning logic
+            float xOffset = bs.X * sizeOfTile - (sizeOfTile / 2f);
+            float zOffset = bs.Y * sizeOfTile + (sizeOfTile / 2f);
+            float yOffset = (type == UnitTypes.BasicMelee) ? 1f : 0f;
+
+            bs.transform.position = new Vector3(xOffset, yOffset, zOffset);
+            spawnedUnits.Add(bs);
+        }
+
+        return spawnedUnits;
     }
 
 
