@@ -8,150 +8,126 @@ using UnityEngine.TestTools;
 public class BoardLayout :MonoBehaviour
 {
     [Header("Board Settings")]
-    [SerializeField] private  int widthOfTable = 60;
-    [SerializeField] private  int heightOfTable = 40;
-    [SerializeField] private  int sizeOfTile = 10;
+    [SerializeField] private int widthOfTable = 15;
+    [SerializeField] private int heightOfTable = 10;
+    [SerializeField] private int sizeOfTile = 10;
 
     [Header("Materials")]
     [SerializeField] private Material grassMaterial;
 
     [Header("Prefabs")]
     [SerializeField] private GameObject[] unitPrefabs;
-    [SerializeField] private GameObject[] flowerPrefabs;
+    [SerializeField] private GameObject[] baseGrassPrefabs;
+    [SerializeField] private GameObject[] detailFlowerPrefabs;
 
-    [Header("Generation Settings")]
+    [Header("Meadow Density Settings")]
     [UnityEngine.Range(0, 1)]
-    [SerializeField] private float flowerChance = 0.2f;
+    [SerializeField] private float decorationChance = 1.0f;
+    [SerializeField] private int densityPerTile = 20;
+    [SerializeField] private float scaleMin = 2.5f;
+    [SerializeField] private float scaleMax = 4.5f;
+    [SerializeField] private float pivotOffset = 0.5f;
 
     private GameObject[,] tiles;
     private bool isGenerated = false;
-    private Deck currentDeck;
 
     public void GenerateBoardLayout()
     {
         if (isGenerated) return;
         isGenerated = true;
 
-        GenerateMapTiles(widthOfTable, heightOfTable, sizeOfTile);
+        GenerateMapTiles();
 
-        // Example unit setup
-        List<UnitTypes> myUnits = new()
-        {
-            UnitTypes.BasicMelee,
-            UnitTypes.Ranged,
-            UnitTypes.AdvancedMelee,
-            UnitTypes.Wizard,
-            UnitTypes.Artillery,
-            UnitTypes.Special,
-            UnitTypes.BasicMelee
-        };
-
-        Deck deck = new(myUnits, Factions.Human);
-        //GenerateDecks(deck);
+        // Final step: Static Batching for the whole board
+        // This combines all meshes to reduce Draw Calls significantly
+        StaticBatchingUtility.Combine(gameObject);
     }
 
-    private void GenerateMapTiles(int tileCountX, int tileCountY, float tileWidth)
+    private void GenerateMapTiles()
     {
-        tiles = new GameObject[tileCountX, tileCountY];
+        tiles = new GameObject[widthOfTable, heightOfTable];
 
-        for (int i = 0; i < tileCountX; i++)
+        for (int i = 0; i < widthOfTable; i++)
         {
-            for (int n = 0; n < tileCountY; n++)
+            for (int n = 0; n < heightOfTable; n++)
             {
-                // 1. Create Tile Object
-                GameObject tile = new($"Tile_{i}_{n}");
+                // Create the Tile container
+                GameObject tile = new GameObject($"Tile_{i}_{n}");
                 tile.transform.parent = transform;
+                // Performance: Mark as static so Unity can batch it
+                tile.isStatic = true;
 
-                // 2. Set up Mesh
-                Mesh mesh = new();
+                // Setup the floor mesh
+                Mesh mesh = new Mesh();
                 tile.AddComponent<MeshFilter>().mesh = mesh;
                 MeshRenderer renderer = tile.AddComponent<MeshRenderer>();
                 renderer.material = grassMaterial;
+                // Performance: Ensure floor can be instanced/batched
+                renderer.realtimeLightmapIndex = -1;
 
-                // 3. Calculate Positions
-                float x = i * tileWidth;
-                float z = n * tileWidth;
+                float x = i * sizeOfTile;
+                float z = n * sizeOfTile;
 
-                Vector3[] vertices = new Vector3[]
+                mesh.vertices = new Vector3[]
                 {
                     new (x, 0f, z),
-                    new (x, 0f, z + tileWidth),
-                    new (x + tileWidth, 0f, z),
-                    new (x + tileWidth, 0f, z + tileWidth)
+                    new (x, 0f, z + sizeOfTile),
+                    new (x + sizeOfTile, 0f, z),
+                    new (x + sizeOfTile, 0f, z + sizeOfTile)
                 };
 
-                Vector2[] uv = new Vector2[]
-                {
-                    new (0, 0),
-                    new (0, 1),
-                    new (1, 0),
-                    new (1, 1)
-                };
-
-                int[] triangles = { 0, 1, 2, 1, 3, 2 };
-
-                mesh.vertices = vertices;
-                mesh.uv = uv;
-                mesh.triangles = triangles;
+                mesh.uv = new Vector2[] { new(0, 0), new(0, 1), new(1, 0), new(1, 1) };
+                mesh.triangles = new int[] { 0, 1, 2, 1, 3, 2 };
 
                 mesh.RecalculateNormals();
                 mesh.RecalculateBounds();
 
                 tiles[i, n] = tile;
 
-                // 4. Decoration Spawning
-                if (Random.value < flowerChance && flowerPrefabs.Length > 0)
+                if (Random.value < decorationChance)
                 {
-                    SpawnFlowerOnTile(i, n, tileWidth);
+                    // Pass the 'tile' as parent to help with culling and grouping
+                    PopulateLushMeadow(i, n, sizeOfTile, tile.transform);
                 }
             }
         }
     }
 
-    private void SpawnFlowerOnTile(int i, int n, float tileWidth)
+    private void PopulateLushMeadow(int i, int n, float tileWidth, Transform parentTile)
     {
-        // Center the flower on the tile
-        float xPos = i * tileWidth + (tileWidth / 2f);
-        float zPos = n * tileWidth + (tileWidth / 2f);
+        float xBase = i * tileWidth + (tileWidth / 2f);
+        float zBase = n * tileWidth + (tileWidth / 2f);
 
-        // Raise it slightly (0.01) to prevent "Z-Fighting" with the floor
-        Vector3 flowerPos = new(xPos, 0.01f, zPos);
-
-        // Pick random flower
-        GameObject randomFlower = flowerPrefabs[0];
-
-        GameObject flower = Instantiate(randomFlower, flowerPos, Quaternion.identity, transform);
-
-        // Randomize rotation and slightly randomize scale for a natural look
-        flower.transform.rotation = Quaternion.Euler(0, Random.Range(0, 360), 0);
-        float randomScale = Random.Range(0.8f, 1.2f);
-        flower.transform.localScale *= randomScale;
-    }
-
-    private List<BaseUnit> GenerateDecks(Deck deck)
-    {
-        List<BaseUnit> spawnedUnits = new();
-        List<UnitTypes> list = deck.GetHoleListUnit();
-
-        for (int i = 0; i < list.Count; i++)
+        for (int s = 0; s < densityPerTile; s++)
         {
-            UnitTypes type = list[i];
-            BaseUnit bs = Instantiate(unitPrefabs[(int)type - 1], transform).GetComponent<BaseUnit>();
+            GameObject prefabToSpawn;
+            if (Random.value < 0.7f && baseGrassPrefabs.Length > 0)
+                prefabToSpawn = baseGrassPrefabs[Random.Range(0, baseGrassPrefabs.Length)];
+            else if (detailFlowerPrefabs.Length > 0)
+                prefabToSpawn = detailFlowerPrefabs[Random.Range(0, detailFlowerPrefabs.Length)];
+            else
+                continue;
 
-            bs.X = i + 1; // Start at 1 per your original logic
-            bs.Y = 0;
+            float jitter = tileWidth * 0.6f;
+            float xPos = xBase + Random.Range(-jitter, jitter);
+            float zPos = zBase + Random.Range(-jitter, jitter);
 
-            // Positioning logic
-            float xOffset = bs.X * sizeOfTile - (sizeOfTile / 2f);
-            float zOffset = bs.Y * sizeOfTile + (sizeOfTile / 2f);
-            float yOffset = (type == UnitTypes.BasicMelee) ? 1f : 0f;
+            Vector3 finalPos = new Vector3(xPos, 0.02f + (pivotOffset * 0.1f), zPos);
 
-            bs.transform.position = new Vector3(xOffset, yOffset, zOffset);
-            spawnedUnits.Add(bs);
+            // Use parentTile instead of 'transform' to group objects by tile
+            GameObject go = Instantiate(prefabToSpawn, finalPos, Quaternion.identity, parentTile);
+
+            // Performance: Tell Unity this flower will never move
+            go.isStatic = true;
+
+            go.transform.rotation = Quaternion.Euler(0, Random.Range(0, 360), 0);
+            float sFactor = Random.Range(scaleMin, scaleMax);
+            go.transform.localScale = Vector3.one * sFactor;
+
+            foreach (Transform child in go.transform)
+            {
+                child.localPosition = new Vector3(0, pivotOffset, 0);
+            }
         }
-
-        return spawnedUnits;
     }
-
-
 }

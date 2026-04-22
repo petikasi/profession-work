@@ -248,19 +248,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff312b563689a9a4f823d60cfd8bf359, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BoardLayout
-  widthOfTable: 60
-  heightOfTable: 40
+  widthOfTable: 25
+  heightOfTable: 20
   sizeOfTile: 10
   grassMaterial: {fileID: 2100000, guid: bc688f85a29da6548a198a27784a8736, type: 2}
   unitPrefabs: []
-  flowerPrefabs:
+  baseGrassPrefabs:
   - {fileID: 1247257282136298470, guid: 5c66cb833d5ced841815bf061077f803, type: 3}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  flowerChance: 0.806
+  detailFlowerPrefabs:
+  - {fileID: 1247257282136298470, guid: 305facc97cf265d43906aa3072a2676b, type: 3}
+  decorationChance: 1
+  densityPerTile: 25
+  scaleMin: 1.2
+  scaleMax: 2
+  pivotOffset: 0.5
 --- !u!4 &46322519
 Transform:
   m_ObjectHideFlags: 0
