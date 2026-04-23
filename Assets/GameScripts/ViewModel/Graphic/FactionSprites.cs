@@ -10,8 +10,8 @@ namespace Assets.GameScripts.ViewModel.DeckEditor
     [System.Serializable]
     public class FactionSprites
     {
-        private Factions faction;
-        private Sprite sprite;
+        private readonly Factions faction;
+        private readonly Sprite sprite;
         public FactionSprites(Factions faction, Sprite sprite)
         {
             this.faction = faction;

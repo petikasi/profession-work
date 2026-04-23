@@ -45,13 +45,13 @@ public class DeckBuilderController : MonoBehaviour
             DeckSaving.SaveDeckList(DeckManagerController.Instance.DeckList);
 
         }
-        else 
+        else
         {
             DeckSaving.SaveDeck(DeckInBuilding);
             DeckManagerController.Instance.AddDeckToDeckList(DeckInBuilding);
 
         }
-        DeckInBuilding = new Deck();
+        DeckInBuilding = new();
 
     }
 
@@ -73,9 +73,9 @@ public class DeckBuilderController : MonoBehaviour
 
         }
     }
-    public void SetDeckToEmpty ()
-    {
-        DeckInBuilding = new Deck();
+    public void SetDeckToEmpty()
+    { 
+        DeckInBuilding = new();
     }
 
 }

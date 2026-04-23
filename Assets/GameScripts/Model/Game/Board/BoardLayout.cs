@@ -52,13 +52,13 @@ public class BoardLayout :MonoBehaviour
             for (int n = 0; n < heightOfTable; n++)
             {
                 // Create the Tile container
-                GameObject tile = new GameObject($"Tile_{i}_{n}");
+                GameObject tile = new($"Tile_{i}_{n}");
                 tile.transform.parent = transform;
                 // Performance: Mark as static so Unity can batch it
                 tile.isStatic = true;
 
                 // Setup the floor mesh
-                Mesh mesh = new Mesh();
+                Mesh mesh = new();
                 tile.AddComponent<MeshFilter>().mesh = mesh;
                 MeshRenderer renderer = tile.AddComponent<MeshRenderer>();
                 renderer.material = grassMaterial;
@@ -112,7 +112,7 @@ public class BoardLayout :MonoBehaviour
             float xPos = xBase + Random.Range(-jitter, jitter);
             float zPos = zBase + Random.Range(-jitter, jitter);
 
-            Vector3 finalPos = new Vector3(xPos, 0.02f + (pivotOffset * 0.1f), zPos);
+            Vector3 finalPos = new(xPos, 0.02f + (pivotOffset * 0.1f), zPos);
 
             // Use parentTile instead of 'transform' to group objects by tile
             GameObject go = Instantiate(prefabToSpawn, finalPos, Quaternion.identity, parentTile);
@@ -126,7 +126,7 @@ public class BoardLayout :MonoBehaviour
 
             foreach (Transform child in go.transform)
             {
-                child.localPosition = new Vector3(0, pivotOffset, 0);
+                child.localPosition = new(0, pivotOffset, 0);
             }
         }
     }
