@@ -11,10 +11,11 @@ using UnityEngine;
         public int MovementSpeed { get; protected set; }
         public int Range { get; protected set; }
 
+        public int Initiate { get; protected set; }
+
         public Factions Faction { get; set; }
         public Player Player { get; set; }
         public UnitTypes UnitType { get; set; }
-
         public int X { get; set; }
         public int Y { get; set; }
 

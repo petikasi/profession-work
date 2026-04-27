@@ -44,6 +44,10 @@ public class BoardLayout :MonoBehaviour
 
         // 3. Optional: Combine all flowers for extra performance
         StaticBatchingUtility.Combine(gameObject);
+
+        
+
+
     }
 
     private void GenerateOneBigFloor(int tileCountX, int tileCountY, float tileWidth)
@@ -152,5 +156,68 @@ public class BoardLayout :MonoBehaviour
                 child.localPosition = new Vector3(0, pivotOffset, 0);
             }
         }
+
+
     }
+
+    private List<BaseUnit> GenerateDecks(Deck deck)
+    {
+        List<BaseUnit> spawnedUnits = new();
+        List<UnitTypes> unitList = deck.GetHoleListUnit();
+
+        for (int i = 0; i < unitList.Count; i++)
+        {
+            UnitTypes type = unitList[i];
+
+            // Pick the right prefab
+            GameObject prefab = unitPrefabs[(int)type - 1];
+
+            // 1. CHOOSE THE TILE COORDINATES
+            // For example: Put them in a row on X, at the edge of the map (Z=0)
+            int tileX = i + 5;
+            int tileZ = 2;
+
+            // 2. CONVERT TILE TO WORLD POSITION
+            // We find the center of the tile: (Index * Size) + (Half Size)
+            float xPos = (tileX * sizeOfTile) + (sizeOfTile / 2f);
+            float zPos = (tileZ * sizeOfTile) + (sizeOfTile / 2f);
+
+            // Small Y offset so they don't clip into the grass
+            float yPos = 1.0f;
+
+            Vector3 spawnPos = new Vector3(xPos, yPos, zPos);
+
+            // 3. SPAWN THE UNIT
+            GameObject unitGo = Instantiate(prefab, spawnPos, Quaternion.identity);
+            BaseUnit bs = unitGo.GetComponent<BaseUnit>();
+
+            // Store the tile coordinates inside the unit so it knows where it "lives"
+            bs.X = tileX;
+            bs.Y = tileZ;
+
+            spawnedUnits.Add(bs);
+        }
+
+        return spawnedUnits;
+    }
+
+   /* void Update()
+    {
+        if (Input.GetMouseButtonDown(0))
+        {
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            if (Physics.Raycast(ray, out RaycastHit hit))
+            {
+                // If we hit the "GrandFloor", calculate which tile was clicked
+                if (hit.collider.gameObject.name == "GrandFloor")
+                {
+                    int clickedX = Mathf.FloorToInt(hit.point.x / sizeOfTile);
+                    int clickedZ = Mathf.FloorToInt(hit.point.z / sizeOfTile);
+
+                    Debug.Log($"You clicked Tile: {clickedX}, {clickedZ}");
+                    // Now you can tell your Unit to move to this X and Z!
+                }
+            }
+        }
+    }*/
 }
