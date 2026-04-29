@@ -4,13 +4,14 @@ using Assets.GameScripts.ViewModel.DeckEditor;
 using Assets.GameScripts.ViewModel.Graphic;
 using Assets.GameScripts.ViewModel.PrefabsAndAbstracts;
 using UnityEngine;
+using UnityEngine.UI;
 
 
 namespace Assets.GameScripts.ViewModel.SinglePlayer
 {
     public class SinglePlayerDeckList : DeckListerAbstract<Deck>
     {
-
+        [SerializeField] protected Button playButton;
         private List<FactionSprites> factionSprites;
 
         private void Awake()
@@ -23,11 +24,14 @@ namespace Assets.GameScripts.ViewModel.SinglePlayer
         protected override void OnEnable()
         {
             base.OnEnable();
+            DeckManagerController.Instance.Selecteddeck += ShowPlayAndRenameButton;
+            HidePlayAndRenameButton();
         }
 
         protected override void OnDisable()
         {
             base.OnDisable();
+            DeckManagerController.Instance.Selecteddeck += ShowPlayAndRenameButton;
         }
 
         protected override List<Deck> GetItems()
@@ -44,6 +48,18 @@ namespace Assets.GameScripts.ViewModel.SinglePlayer
 
             ui.Initialize(deck, factionSprite?.GetSprite);
         }
+
+        private void ShowPlayAndRenameButton() 
+        {
+
+            playButton.gameObject.SetActive(true);
+        }
+        private void HidePlayAndRenameButton()
+        {
+
+            playButton.gameObject.SetActive(false);
+        }
+
 
     }
 

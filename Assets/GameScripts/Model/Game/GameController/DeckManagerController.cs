@@ -64,5 +64,7 @@ namespace Assets.GameScripts.Model.Game.GameController
             DeckBuilderController.Instance.ReciveDeckToModif(SelectedDeck);
 
         }
+
+        
     }
 }
