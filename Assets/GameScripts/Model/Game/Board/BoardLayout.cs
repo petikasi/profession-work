@@ -1,5 +1,6 @@
 
 using System.Collections.Generic;
+using Assets.GameScripts.Model.Game.GameController;
 using NUnit.Framework;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -45,14 +46,15 @@ public class BoardLayout :MonoBehaviour
         // 3. Optional: Combine all flowers for extra performance
         StaticBatchingUtility.Combine(gameObject);
 
-        
+        //put down units
+        GenerateDecks(DeckManagerController.Instance.SelectedDeck);
 
 
     }
 
     private void GenerateOneBigFloor(int tileCountX, int tileCountY, float tileWidth)
     {
-        GameObject floor = new GameObject("GrandFloor");
+        GameObject floor = new("GrandFloor");
         floor.transform.parent = transform;
         floor.isStatic = true;
 
@@ -60,7 +62,7 @@ public class BoardLayout :MonoBehaviour
         MeshRenderer meshRenderer = floor.AddComponent<MeshRenderer>();
         meshRenderer.material = grassMaterial;
 
-        Mesh mesh = new Mesh();
+        Mesh mesh = new();
 
         // We create vertices for the WHOLE table at once
         int vCount = (tileCountX + 1) * (tileCountY + 1);
@@ -112,7 +114,7 @@ public class BoardLayout :MonoBehaviour
     private void PopulateEntireMeadow(int tileCountX, int tileCountY, float tileWidth)
     {
         // Create one container for all flowers to keep the Hierarchy clean
-        GameObject flowerContainer = new GameObject("FlowerContainer");
+        GameObject flowerContainer = new("FlowerContainer");
         flowerContainer.transform.parent = transform;
 
         for (int i = 0; i < tileCountX; i++)
@@ -139,7 +141,7 @@ public class BoardLayout :MonoBehaviour
             GameObject prefab = (Random.value < 0.7f) ? baseGrassPrefabs[0] : detailFlowerPrefabs[0];
 
             float jitter = tileWidth * 0.6f;
-            Vector3 pos = new Vector3(
+            Vector3 pos = new(
                 xBase + Random.Range(-jitter, jitter),
                 0.05f + (pivotOffset * 0.1f), // Lifted slightly
                 zBase + Random.Range(-jitter, jitter)
@@ -169,33 +171,26 @@ public class BoardLayout :MonoBehaviour
         {
             UnitTypes type = unitList[i];
 
-            // Pick the right prefab
             GameObject prefab = unitPrefabs[(int)type - 1];
 
-            // 1. CHOOSE THE TILE COORDINATES
-            // For example: Put them in a row on X, at the edge of the map (Z=0)
             int tileX = i + 5;
             int tileZ = 2;
 
-            // 2. CONVERT TILE TO WORLD POSITION
-            // We find the center of the tile: (Index * Size) + (Half Size)
             float xPos = (tileX * sizeOfTile) + (sizeOfTile / 2f);
             float zPos = (tileZ * sizeOfTile) + (sizeOfTile / 2f);
 
-            // Small Y offset so they don't clip into the grass
             float yPos = 1.0f;
 
-            Vector3 spawnPos = new Vector3(xPos, yPos, zPos);
+            Vector3 spawnPos = new (xPos, yPos, zPos);
 
-            // 3. SPAWN THE UNIT
             GameObject unitGo = Instantiate(prefab, spawnPos, Quaternion.identity);
-            BaseUnit bs = unitGo.GetComponent<BaseUnit>();
-
-            // Store the tile coordinates inside the unit so it knows where it "lives"
+            /*BaseUnit bs = unitGo.GetComponentInChildren();
+            Debug.Log(unitGo.GetComponent<BaseUnit>());
+            Debug.Log(unitGo);
             bs.X = tileX;
             bs.Y = tileZ;
 
-            spawnedUnits.Add(bs);
+            spawnedUnits.Add(bs);*/
         }
 
         return spawnedUnits;

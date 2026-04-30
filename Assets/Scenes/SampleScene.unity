@@ -252,7 +252,13 @@ MonoBehaviour:
   heightOfTable: 20
   sizeOfTile: 10
   grassMaterial: {fileID: 2100000, guid: bc688f85a29da6548a198a27784a8736, type: 2}
-  unitPrefabs: []
+  unitPrefabs:
+  - {fileID: 100000, guid: dc780bbe80163bc46883e8c2d96af493, type: 3}
+  - {fileID: 100000, guid: 5538ed982796ebd4c8cc731f2b530e42, type: 3}
+  - {fileID: 100000, guid: 25f5852bdc32bf74790bd0cfd333a532, type: 3}
+  - {fileID: 100000, guid: b66f4744e8bb24a448fcfa81a1781df5, type: 3}
+  - {fileID: 100000, guid: 63372fdecc46ca243992469e037a3b89, type: 3}
+  - {fileID: 100000, guid: 6a678404afed8a84499291f5b2dc6a73, type: 3}
   baseGrassPrefabs:
   - {fileID: 1247257282136298470, guid: 5c66cb833d5ced841815bf061077f803, type: 3}
   detailFlowerPrefabs:
@@ -7608,7 +7614,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1645797109
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7739,7 +7745,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1665924788
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7845,6 +7851,7 @@ MonoBehaviour:
   nextButton: {fileID: 868191170}
   previousButton: {fileID: 2046077281}
   itemsPerPage: 9
+  playButton: {fileID: 249944076}
 --- !u!1 &1724567103
 GameObject:
   m_ObjectHideFlags: 0
