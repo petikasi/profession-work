@@ -47,8 +47,10 @@ public class BoardLayout :MonoBehaviour
         StaticBatchingUtility.Combine(gameObject);
 
         //put down units
-        GenerateDecks(DeckManagerController.Instance.SelectedDeck);
+        GenerateDecks();//DeckManagerController.Instance.SelectedDeck
 
+
+        FitCameraToMap();
 
     }
 
@@ -162,57 +164,66 @@ public class BoardLayout :MonoBehaviour
 
     }
 
-    private List<BaseUnit> GenerateDecks(Deck deck)
+    private void GenerateDecks()
     {
-        List<BaseUnit> spawnedUnits = new();
-        List<UnitTypes> unitList = deck.GetHoleListUnit();
-
-        for (int i = 0; i < unitList.Count; i++)
+        // Let's place 10 units in the FIRST row (Z = 0)
+        for (int i = 0; i < 10; i++)
         {
-            UnitTypes type = unitList[i];
+            // Change these numbers to move the "Row"
+            int targetTileX = i + 2; // Start from the 3rd tile to the right
+            int targetTileZ = 0;     // 0 is the very first row
 
-            GameObject prefab = unitPrefabs[(int)type - 1];
-
-            int tileX = i + 5;
-            int tileZ = 2;
-
-            float xPos = (tileX * sizeOfTile) + (sizeOfTile / 2f);
-            float zPos = (tileZ * sizeOfTile) + (sizeOfTile / 2f);
-
-            float yPos = 1.0f;
-
-            Vector3 spawnPos = new (xPos, yPos, zPos);
-
-            GameObject unitGo = Instantiate(prefab, spawnPos, Quaternion.identity);
-            /*BaseUnit bs = unitGo.GetComponentInChildren();
-            Debug.Log(unitGo.GetComponent<BaseUnit>());
-            Debug.Log(unitGo);
-            bs.X = tileX;
-            bs.Y = tileZ;
-
-            spawnedUnits.Add(bs);*/
+            PlaceUnitAtTile(targetTileX, targetTileZ, unitPrefabs[0]);
         }
-
-        return spawnedUnits;
     }
 
-   /* void Update()
+    public void PlaceUnitAtTile(int x, int z, GameObject unitPrefab)
     {
-        if (Input.GetMouseButtonDown(0))
-        {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            if (Physics.Raycast(ray, out RaycastHit hit))
-            {
-                // If we hit the "GrandFloor", calculate which tile was clicked
-                if (hit.collider.gameObject.name == "GrandFloor")
-                {
-                    int clickedX = Mathf.FloorToInt(hit.point.x / sizeOfTile);
-                    int clickedZ = Mathf.FloorToInt(hit.point.z / sizeOfTile);
+        float worldX = (x * sizeOfTile) + (sizeOfTile / 2f);
+        float worldZ = (z * sizeOfTile) + (sizeOfTile / 2f);
 
-                    Debug.Log($"You clicked Tile: {clickedX}, {clickedZ}");
-                    // Now you can tell your Unit to move to this X and Z!
-                }
-            }
-        }
-    }*/
+        // Lift them slightly so they aren't stuck in the floor
+        Vector3 spawnPos = new Vector3(worldX, 0.5f, worldZ);
+
+        GameObject unit = Instantiate(unitPrefab, spawnPos, Quaternion.identity);
+
+        unit.transform.rotation = Quaternion.Euler(-90, 0, 0);
+
+        unit.name = $"Unit_{x}_{z}";
+    }
+
+    /* void Update()
+     {
+         if (Input.GetMouseButtonDown(0))
+         {
+             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+             if (Physics.Raycast(ray, out RaycastHit hit))
+             {
+                 // If we hit the "GrandFloor", calculate which tile was clicked
+                 if (hit.collider.gameObject.name == "GrandFloor")
+                 {
+                     int clickedX = Mathf.FloorToInt(hit.point.x / sizeOfTile);
+                     int clickedZ = Mathf.FloorToInt(hit.point.z / sizeOfTile);
+
+                     Debug.Log($"You clicked Tile: {clickedX}, {clickedZ}");
+                     // Now you can tell your Unit to move to this X and Z!
+                 }
+             }
+         }
+     }*/
+
+    private void FitCameraToMap()
+    {
+        // Calculate the center of your generated board
+        float centerX = (widthOfTable * sizeOfTile) / 2f;
+        float centerZ = (heightOfTable * sizeOfTile) / 2f;
+
+        // Position the camera slightly back and up from the center
+        // Adjust the '150f' for height and '-100f' for zoom distance
+        Vector3 cameraPos = new Vector3(centerX, 150f, centerZ - 100f);
+        Camera.main.transform.position = cameraPos;
+
+        // Force the camera to look at the exact center of the board
+        Camera.main.transform.LookAt(new Vector3(centerX, 0, centerZ));
+    }
 }
