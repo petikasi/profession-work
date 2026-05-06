@@ -14,7 +14,7 @@ namespace Assets.GameScripts.Model.Game.Board
 
         void Update()
         {
-            // 2. The New Input System way to check for a left-click
+
             if (Pointer.current != null && Pointer.current.press.wasPressedThisFrame)
             {
                 HandleSelection();
@@ -23,7 +23,6 @@ namespace Assets.GameScripts.Model.Game.Board
 
         private void HandleSelection()
         {
-            // 3. New way to get the mouse position
             Vector2 mousePos = Pointer.current.position.ReadValue();
             Ray ray = Camera.main.ScreenPointToRay(mousePos);
 

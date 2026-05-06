@@ -183,7 +183,7 @@ public class BoardLayout :MonoBehaviour
         float worldZ = (z * sizeOfTile) + (sizeOfTile / 2f);
 
         // Lift them slightly so they aren't stuck in the floor
-        Vector3 spawnPos = new Vector3(worldX, 0.5f, worldZ);
+        Vector3 spawnPos = new(worldX, 0.5f, worldZ);
 
         GameObject unit = Instantiate(unitPrefab, spawnPos, Quaternion.identity);
 
@@ -220,7 +220,7 @@ public class BoardLayout :MonoBehaviour
 
         // Position the camera slightly back and up from the center
         // Adjust the '150f' for height and '-100f' for zoom distance
-        Vector3 cameraPos = new Vector3(centerX, 150f, centerZ - 100f);
+        Vector3 cameraPos = new(centerX, 150f, centerZ - 100f);
         Camera.main.transform.position = cameraPos;
 
         // Force the camera to look at the exact center of the board
