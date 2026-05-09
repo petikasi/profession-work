@@ -214,16 +214,12 @@ public class BoardLayout :MonoBehaviour
 
     private void FitCameraToMap()
     {
-        // Calculate the center of your generated board
         float centerX = (widthOfTable * sizeOfTile) / 2f;
         float centerZ = (heightOfTable * sizeOfTile) / 2f;
 
-        // Position the camera slightly back and up from the center
-        // Adjust the '150f' for height and '-100f' for zoom distance
         Vector3 cameraPos = new(centerX, 150f, centerZ - 100f);
         Camera.main.transform.position = cameraPos;
 
-        // Force the camera to look at the exact center of the board
         Camera.main.transform.LookAt(new Vector3(centerX, 0, centerZ));
     }
 }

@@ -8,17 +8,35 @@ namespace Assets.GameScripts.Model.Game.Board
 {
     public class DynamicCamera : MonoBehaviour
     {
-        [Header("Movement Settings")]
+        [Header("Mozgás")]
         [SerializeField] private float moveSpeed = 100f;
-        [SerializeField] private float zoomSpeed = 100f;
-        [SerializeField] private float minHeight = 20f;
-        [SerializeField] private float maxHeight = 400f;
+        [SerializeField] private float zoomSpeed = 200f;
 
-        [Header("Rotation Settings")]
-        [SerializeField] private float rotationSpeed = 50f;
+        [Header("Határok")]
+        [SerializeField] private float minHeight = 10f;// A pálya minimum magassága
+        [SerializeField] private float maxHeight = 200f;// A pálya maximum magassága
+        [SerializeField] private float groundY = 0f; // A pálya magassága
 
-        private Vector2 moveInput;
-        private float zoomInput;
+        [Header("Dőlésszög (C és V)")]
+        [SerializeField] private float pitchSpeed = 40f;
+        [SerializeField] private float minPitch = 20f; // Alacsony nézet
+        [SerializeField] private float maxPitch = 85f; // Majdnem teljesen felülről
+
+        private Vector3 targetPosition; // Ez a pont, amit a kamera "néz" a földön
+
+        void Start()
+        {
+            // Kezdéskor a kamera elé állítjuk a fókuszpontot a földön
+            Ray ray = new Ray(transform.position, transform.forward);
+            if (Physics.Raycast(ray, out RaycastHit hit))
+            {
+                targetPosition = hit.point;
+            }
+            else
+            {
+                targetPosition = new Vector3(transform.position.x, groundY, transform.position.z + 50f);
+            }
+        }
 
         void Update()
         {
@@ -29,39 +47,78 @@ namespace Assets.GameScripts.Model.Game.Board
 
         private void HandleMovement()
         {
-            if (Keyboard.current != null)
-            {
-                float x = (Keyboard.current.dKey.isPressed ? 1 : 0) - (Keyboard.current.aKey.isPressed ? 1 : 0);
-                float z = (Keyboard.current.wKey.isPressed ? 1 : 0) - (Keyboard.current.sKey.isPressed ? 1 : 0);
+            float x = (Keyboard.current.dKey.isPressed ? 1 : 0) - (Keyboard.current.aKey.isPressed ? 1 : 0);
+            float z = (Keyboard.current.wKey.isPressed ? 1 : 0) - (Keyboard.current.sKey.isPressed ? 1 : 0);
 
-                Vector3 move = new Vector3(x, 0, z) * moveSpeed * Time.deltaTime;
-                transform.Translate(move, Space.World);
+            if (x != 0 || z != 0)
+            {
+                // A kamera irányához képest mozgatunk (hogy a 'W' előre menjen, amerre nézünk)
+                Vector3 forward = transform.forward;
+                forward.y = 0; // Ne menjünk bele a földbe mozgáskor
+                Vector3 right = transform.right;
+
+                Vector3 moveDir = (forward.normalized * z + right.normalized * x).normalized;
+
+                // Mozgatjuk a kamerát ÉS a célpontot is
+                transform.position += moveDir * moveSpeed * Time.deltaTime;
             }
         }
 
         private void HandleZoom()
         {
-            if (Mouse.current != null)
+            float scroll = Mouse.current.scroll.ReadValue().y;
+
+            if (scroll != 0)
             {
-                float scroll = Mouse.current.scroll.ReadValue().y;
+                // Raycast-ot indítunk az egér pozíciójából, hogy megtudjuk, MIRE akarunk ránagyítani
+                Ray ray = Camera.main.ScreenPointToRay(Mouse.current.position.ReadValue());
 
-                if (scroll != 0)
+                if (Physics.Raycast(ray, out RaycastHit hit))
                 {
-                    Vector3 zoomDir = transform.forward * (scroll * zoomSpeed * Time.deltaTime);
-                    Vector3 newPos = transform.position + zoomDir;
+                    // Ez az a pont a földön, ami felé közelíteni fogunk
+                    Vector3 zoomTarget = hit.point;
 
-                    newPos.y = Mathf.Clamp(newPos.y, minHeight, maxHeight);
-                    transform.position = newPos;
+                    // Kiszámoljuk az irányt a kamera és a pont között
+                    Vector3 direction = (zoomTarget - transform.position).normalized;
+
+                    // Közelítés mértéke
+                    float zoomAmount = scroll * zoomSpeed * Time.deltaTime;
+                    Vector3 newPos = transform.position + direction * zoomAmount;
+
+                    // Magasság korlátozása (ne menjünk a föld alá)
+                    if (newPos.y > minHeight && newPos.y < maxHeight)
+                    {
+                        transform.position = newPos;
+                    }
                 }
             }
         }
-
         private void HandleRotation()
         {
-            if (Keyboard.current != null)
+            if (Keyboard.current == null) return;
+
+            // 1. Oldalirányú forgatás (Q és E) - Opcionális, de hasznos
+            float yRot = (Keyboard.current.eKey.isPressed ? 1 : 0) - (Keyboard.current.qKey.isPressed ? 1 : 0);
+            if (yRot != 0)
             {
-                float rot = (Keyboard.current.eKey.isPressed ? 1 : 0) - (Keyboard.current.qKey.isPressed ? 1 : 0);
-                transform.Rotate(Vector3.up, rot * rotationSpeed * Time.deltaTime, Space.World);
+                transform.Rotate(Vector3.up, yRot * pitchSpeed * Time.deltaTime, Space.World);
+            }
+
+            // 2. Függőleges dőlésszög (C és V)
+            // C = Lefelé néz (nagyobb szög), V = Felfelé néz (kisebb szög)
+            float pInput = (Keyboard.current.cKey.isPressed ? 1 : 0) - (Keyboard.current.vKey.isPressed ? 1 : 0);
+
+            if (pInput != 0)
+            {
+                // Lekérjük a jelenlegi szöget
+                Vector3 currentRotation = transform.eulerAngles;
+                float newPitch = currentRotation.x + (pInput * pitchSpeed * Time.deltaTime);
+
+                // Korlátozzuk (Clamp), hogy ne forduljon át a kamera
+                newPitch = Mathf.Clamp(newPitch, minPitch, maxPitch);
+
+                // Alkalmazzuk az új rotációt
+                transform.rotation = Quaternion.Euler(newPitch, currentRotation.y, 0);
             }
         }
     }
