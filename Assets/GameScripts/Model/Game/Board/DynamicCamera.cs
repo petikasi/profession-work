@@ -8,17 +8,17 @@ namespace Assets.GameScripts.Model.Game.Board
 {
     public class DynamicCamera : MonoBehaviour
     {
-        [Header("Mozgás")]
-        [SerializeField] private float moveSpeed = 100f;
-        [SerializeField] private float zoomSpeed = 200f;
+        [Header("Movement")]
+        [SerializeField] private float moveSpeed = 100f;//A pályán történő mozgatás sebessége
+        [SerializeField] private float zoomSpeed = 200f;//A pályára történő közelítés sebessége
 
-        [Header("Határok")]
-        [SerializeField] private float minHeight = 10f;// A pálya minimum magassága
-        [SerializeField] private float maxHeight = 200f;// A pálya maximum magassága
-        [SerializeField] private float groundY = 0f; // A pálya magassága
+        [Header("Borders")]
+        [SerializeField] private float minHeight = 10f;// A kamera minimum magassága
+        [SerializeField] private float maxHeight = 200f;// A kamera maximum magassága
+        [SerializeField] private float groundY = 0f; // A kamera magassága
 
-        [Header("Dőlésszög (C és V)")]
-        [SerializeField] private float pitchSpeed = 40f;
+        [Header("Tilt angel (C and V)")]
+        [SerializeField] private float pitchSpeed = 50f;//forgatás gyorsasága
         [SerializeField] private float minPitch = 20f; // Alacsony nézet
         [SerializeField] private float maxPitch = 85f; // Majdnem teljesen felülről
 
@@ -27,7 +27,7 @@ namespace Assets.GameScripts.Model.Game.Board
         void Start()
         {
             // Kezdéskor a kamera elé állítjuk a fókuszpontot a földön
-            Ray ray = new Ray(transform.position, transform.forward);
+            Ray ray = new(transform.position, transform.forward);
             if (Physics.Raycast(ray, out RaycastHit hit))
             {
                 targetPosition = hit.point;
@@ -47,8 +47,8 @@ namespace Assets.GameScripts.Model.Game.Board
 
         private void HandleMovement()
         {
-            float x = (Keyboard.current.dKey.isPressed ? 1 : 0) - (Keyboard.current.aKey.isPressed ? 1 : 0);
-            float z = (Keyboard.current.wKey.isPressed ? 1 : 0) - (Keyboard.current.sKey.isPressed ? 1 : 0);
+            float x = (Keyboard.current.dKey.isPressed ? 2 : 0) - (Keyboard.current.aKey.isPressed ? 2 : 0);
+            float z = (Keyboard.current.wKey.isPressed ? 2 : 0) - (Keyboard.current.sKey.isPressed ? 2 : 0);
 
             if (x != 0 || z != 0)
             {
@@ -98,7 +98,7 @@ namespace Assets.GameScripts.Model.Game.Board
             if (Keyboard.current == null) return;
 
             // 1. Oldalirányú forgatás (Q és E) - Opcionális, de hasznos
-            float yRot = (Keyboard.current.eKey.isPressed ? 1 : 0) - (Keyboard.current.qKey.isPressed ? 1 : 0);
+            float yRot = (Keyboard.current.eKey.isPressed ? 2 : 0) - (Keyboard.current.qKey.isPressed ? 2 : 0);
             if (yRot != 0)
             {
                 transform.Rotate(Vector3.up, yRot * pitchSpeed * Time.deltaTime, Space.World);
@@ -106,7 +106,7 @@ namespace Assets.GameScripts.Model.Game.Board
 
             // 2. Függőleges dőlésszög (C és V)
             // C = Lefelé néz (nagyobb szög), V = Felfelé néz (kisebb szög)
-            float pInput = (Keyboard.current.cKey.isPressed ? 1 : 0) - (Keyboard.current.vKey.isPressed ? 1 : 0);
+            float pInput = (Keyboard.current.cKey.isPressed ? 2 : 0) - (Keyboard.current.vKey.isPressed ? 2 : 0);
 
             if (pInput != 0)
             {

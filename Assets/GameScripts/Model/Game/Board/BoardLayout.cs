@@ -6,7 +6,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.TestTools;
 
-public class BoardLayout :MonoBehaviour
+public class BoardLayout : MonoBehaviour
 {
     [Header("Board Settings")]
     [SerializeField] private int widthOfTable = 15;
@@ -29,7 +29,6 @@ public class BoardLayout :MonoBehaviour
     [SerializeField] private float scaleMax = 4.5f;
     [SerializeField] private float pivotOffset = 0.5f;
 
-    private GameObject[,] tiles;
     private bool isGenerated = false;
 
     public void GenerateBoardLayout()
@@ -37,23 +36,26 @@ public class BoardLayout :MonoBehaviour
         if (isGenerated) return;
         isGenerated = true;
 
-        // 1. Create the big floor (One object instead of 2400!)
+        // 1. Padló legenerálása
         GenerateOneBigFloor(widthOfTable, heightOfTable, sizeOfTile);
 
-        // 2. Spawn the flowers on top using the same grid logic
+        // 2. Növényzet szórása
         PopulateEntireMeadow(widthOfTable, heightOfTable, sizeOfTile);
 
-        // 3. Optional: Combine all flowers for extra performance
-        StaticBatchingUtility.Combine(gameObject);
+        // 3. Egységek lehelyezése
+        GenerateDecks();
 
-        //put down units
-        GenerateDecks();//DeckManagerController.Instance.SelectedDeck
-
-
+        // 4. Kamera pozicionálása
         FitCameraToMap();
 
+        // 5. Háló kirajzolása 
+        GenerateGridLines();
+
+        // 6. Optimalizálás (Batching)
+        StaticBatchingUtility.Combine(gameObject);
     }
 
+    //Ez a methódus feleõs a pálya legenerálásáért
     private void GenerateOneBigFloor(int tileCountX, int tileCountY, float tileWidth)
     {
         GameObject floor = new("GrandFloor");
@@ -65,8 +67,6 @@ public class BoardLayout :MonoBehaviour
         meshRenderer.material = grassMaterial;
 
         Mesh mesh = new();
-
-        // We create vertices for the WHOLE table at once
         int vCount = (tileCountX + 1) * (tileCountY + 1);
         Vector3[] vertices = new Vector3[vCount];
         Vector2[] uvs = new Vector2[vCount];
@@ -76,13 +76,11 @@ public class BoardLayout :MonoBehaviour
             for (int x = 0; x <= tileCountX; x++)
             {
                 vertices[n] = new Vector3(x * tileWidth, 0, z * tileWidth);
-                // This makes the texture repeat on every tile
                 uvs[n] = new Vector2(x, z);
                 n++;
             }
         }
 
-        // Define the triangles for all 2,400 tiles
         int[] triangles = new int[tileCountX * tileCountY * 6];
         int vert = 0;
         int tris = 0;
@@ -96,7 +94,6 @@ public class BoardLayout :MonoBehaviour
                 triangles[tris + 3] = vert + 1;
                 triangles[tris + 4] = vert + tileCountX + 1;
                 triangles[tris + 5] = vert + tileCountX + 2;
-
                 vert++;
                 tris += 6;
             }
@@ -108,14 +105,11 @@ public class BoardLayout :MonoBehaviour
         mesh.triangles = triangles;
         mesh.RecalculateNormals();
         meshFilter.mesh = mesh;
-
-        // IMPORTANT: Add a MeshCollider so you can still "Click" the floor
         floor.AddComponent<MeshCollider>();
     }
 
     private void PopulateEntireMeadow(int tileCountX, int tileCountY, float tileWidth)
     {
-        // Create one container for all flowers to keep the Hierarchy clean
         GameObject flowerContainer = new("FlowerContainer");
         flowerContainer.transform.parent = transform;
 
@@ -123,10 +117,8 @@ public class BoardLayout :MonoBehaviour
         {
             for (int n = 0; n < tileCountY; n++)
             {
-                // Only spawn if our chance is hit
                 if (Random.value < decorationChance)
                 {
-                    // We reuse your Lush Meadow logic here!
                     SpawnFlowerCluster(i, n, tileWidth, flowerContainer.transform);
                 }
             }
@@ -141,11 +133,10 @@ public class BoardLayout :MonoBehaviour
         for (int s = 0; s < densityPerTile; s++)
         {
             GameObject prefab = (Random.value < 0.7f) ? baseGrassPrefabs[0] : detailFlowerPrefabs[0];
-
             float jitter = tileWidth * 0.6f;
             Vector3 pos = new(
                 xBase + Random.Range(-jitter, jitter),
-                0.05f + (pivotOffset * 0.1f), // Lifted slightly
+                0.05f + (pivotOffset * 0.1f),
                 zBase + Random.Range(-jitter, jitter)
             );
 
@@ -154,25 +145,19 @@ public class BoardLayout :MonoBehaviour
             go.transform.rotation = Quaternion.Euler(0, Random.Range(0, 360), 0);
             go.transform.localScale = Vector3.one * Random.Range(scaleMin, scaleMax);
 
-            // Adjust pivot manually via code
             foreach (Transform child in go.transform)
             {
                 child.localPosition = new Vector3(0, pivotOffset, 0);
             }
         }
-
-
     }
 
     private void GenerateDecks()
     {
-        // Let's place 10 units in the FIRST row (Z = 0)
         for (int i = 0; i < 10; i++)
         {
-            // Change these numbers to move the "Row"
-            int targetTileX = i + 2; // Start from the 3rd tile to the right
-            int targetTileZ = 0;     // 0 is the very first row
-
+            int targetTileX = i + 2;
+            int targetTileZ = 0;
             PlaceUnitAtTile(targetTileX, targetTileZ, unitPrefabs[0]);
         }
     }
@@ -181,45 +166,64 @@ public class BoardLayout :MonoBehaviour
     {
         float worldX = (x * sizeOfTile) + (sizeOfTile / 2f);
         float worldZ = (z * sizeOfTile) + (sizeOfTile / 2f);
-
-        // Lift them slightly so they aren't stuck in the floor
         Vector3 spawnPos = new(worldX, 0.5f, worldZ);
 
         GameObject unit = Instantiate(unitPrefab, spawnPos, Quaternion.identity);
-
         unit.transform.rotation = Quaternion.Euler(-90, 0, 0);
-
         unit.name = $"Unit_{x}_{z}";
     }
-
-    /* void Update()
-     {
-         if (Input.GetMouseButtonDown(0))
-         {
-             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-             if (Physics.Raycast(ray, out RaycastHit hit))
-             {
-                 // If we hit the "GrandFloor", calculate which tile was clicked
-                 if (hit.collider.gameObject.name == "GrandFloor")
-                 {
-                     int clickedX = Mathf.FloorToInt(hit.point.x / sizeOfTile);
-                     int clickedZ = Mathf.FloorToInt(hit.point.z / sizeOfTile);
-
-                     Debug.Log($"You clicked Tile: {clickedX}, {clickedZ}");
-                     // Now you can tell your Unit to move to this X and Z!
-                 }
-             }
-         }
-     }*/
 
     private void FitCameraToMap()
     {
         float centerX = (widthOfTable * sizeOfTile) / 2f;
         float centerZ = (heightOfTable * sizeOfTile) / 2f;
-
         Vector3 cameraPos = new(centerX, 150f, centerZ - 100f);
         Camera.main.transform.position = cameraPos;
-
         Camera.main.transform.LookAt(new Vector3(centerX, 0, centerZ));
+    }
+
+    // ELTÁVOLÍTOTTUK A PARAMÉTEREKET, mert az osztály változóit használjuk
+    private void GenerateGridLines()
+    {
+        GameObject gridContainer = new("GridContainer");
+        gridContainer.transform.parent = transform;
+
+        Material lineMat = new(Shader.Find("Sprites/Default"));
+        lineMat.color = Color.black;
+
+        // Vízszintes vonalak
+        for (int z = 0; z <= heightOfTable; z++)
+        {
+            CreateLine(
+                new Vector3(0, 0.1f, z * sizeOfTile),
+                new Vector3(widthOfTable * sizeOfTile, 0.1f, z * sizeOfTile),
+                gridContainer.transform, lineMat
+            );
+        }
+
+        // Függõleges vonalak
+        for (int x = 0; x <= widthOfTable; x++)
+        {
+            CreateLine(
+                new Vector3(x * sizeOfTile, 0.1f, 0),
+                new Vector3(x * sizeOfTile, 0.1f, heightOfTable * sizeOfTile),
+                gridContainer.transform, lineMat
+            );
+        }
+    }
+
+    private void CreateLine(Vector3 start, Vector3 end, Transform parent, Material mat)
+    {
+        GameObject lineObj = new("GridLine");
+        lineObj.transform.parent = parent;
+        LineRenderer lr = lineObj.AddComponent<LineRenderer>();
+        lr.material = mat;
+        lr.startWidth = 0.5f;
+        lr.endWidth = 0.5f;
+        lr.useWorldSpace = true;
+        lr.positionCount = 2;
+        lr.SetPosition(0, start);
+        lr.SetPosition(1, end);
+        lineObj.isStatic = true;
     }
 }
