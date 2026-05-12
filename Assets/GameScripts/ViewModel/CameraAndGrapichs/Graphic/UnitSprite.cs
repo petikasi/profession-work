@@ -1,0 +1,34 @@
+﻿using System;
+using Unity;
+using UnityEngine;
+
+namespace Assets.GameScripts.ViewModel.CameraAndGrapichs.Grapic
+{
+    [System.Serializable]
+    public class UnitSprite
+    {
+        private readonly Factions faction;
+        private readonly UnitTypes unit;
+        private readonly Sprite sprite;
+        public UnitSprite(Factions faction, UnitTypes unit, Sprite sprite)
+        {
+            this.faction = faction;
+            this.unit = unit;
+            this.sprite = sprite;
+
+        }
+
+        public bool ByUnitAndFaction(Factions faction, UnitTypes unit)
+        {
+            if (this.faction == faction && this.unit == unit)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        public Sprite GetSprite => sprite;
+
+    }
+
+}

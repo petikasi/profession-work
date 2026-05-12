@@ -19,12 +19,12 @@ namespace Assets.GameScripts.Model.Units
             { (Factions.Human, UnitTypes.Artillery), "Cataclysm Cannon" },
             { (Factions.Human, UnitTypes.Special), "Archangel of Penance" },
             //Orks
-            { (Factions.OrksAndGoblins, UnitTypes.BasicMelee), "Da Boyz" },
-            { (Factions.OrksAndGoblins, UnitTypes.Ranged), "Spite-Flinger" },
-            { (Factions.OrksAndGoblins, UnitTypes.AdvancedMelee), "Iron-Crusher" },
-            { (Factions.OrksAndGoblins, UnitTypes.Wizard), "Boneseer" },
-            { (Factions.OrksAndGoblins, UnitTypes.Artillery), "Skull Lobber" },
-            { (Factions.OrksAndGoblins, UnitTypes.Special), "The Bloodaxe" },
+            { (Factions.Orks, UnitTypes.BasicMelee), "Da Boyz" },
+            { (Factions.Orks, UnitTypes.Ranged), "Spite-Flinger" },
+            { (Factions.Orks, UnitTypes.AdvancedMelee), "Iron-Crusher" },
+            { (Factions.Orks, UnitTypes.Wizard), "Boneseer" },
+            { (Factions.Orks, UnitTypes.Artillery), "Skull Lobber" },
+            { (Factions.Orks, UnitTypes.Special), "The Bloodaxe" },
             //Elves
              { (Factions.Elven, UnitTypes.BasicMelee), "Sentinel" },
             { (Factions.Elven, UnitTypes.Ranged), "Long-Watcher" },

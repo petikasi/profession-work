@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Assets.GameScripts.Model.Game.GameController;
-using Assets.GameScripts.ViewModel.Graphic;
+using Assets.GameScripts.ViewModel.CameraAndGrapichs.Grapic;
 using Assets.GameScripts.ViewModel.PrefabsAndAbstracts;
 using UnityEngine;
 using UnityEngine.UI;

@@ -1,0 +1,90 @@
+using System;
+using System.Collections.Generic;
+using Assets.GameScripts.Model.Units;
+using Assets.GameScripts.ViewModel.Graphic;
+using Mono.Cecil.Cil;
+using TMPro;
+using UnityEditor;
+using UnityEngine;
+using UnityEngine.AddressableAssets;
+using UnityEngine.UI;
+using static UnityEngine.InputSystem.LowLevel.InputStateHistory;
+
+namespace Assets.GameScripts.ViewModel.DeckBuilderMappa.DeckBuilder
+{
+    public class ScrollViewScript : MonoBehaviour
+    {
+        [SerializeField] GameObject UnitPanelPref;
+        [SerializeField] Transform UnitPanelParent;
+        public List<UnitSprite> unitSprites;
+
+        public void Awake()
+        {
+            unitSprites = PictureLoder.Instance.GETUNITPICTURES;
+        }
+
+        private void OnEnable()
+        {
+            DeckBuilderController.Instance.OnFactionChanged += Reload;
+            LoadUnitsView();
+        }
+
+        private void OnDisable()
+        {
+            DeckBuilderController.Instance.OnFactionChanged -= Reload;
+            Clear();
+        }
+
+
+        private void LoadUnitsView()
+        {
+            Clear();
+            foreach (UnitTypes unitType in Enum.GetValues(typeof(UnitTypes)))
+            {
+                string name = UnitNames.GetNameForUnit(DeckBuilderController.Instance.DeckInBuilding.FactionsGet, unitType);
+                GameObject unitpanelGO = Instantiate(UnitPanelPref, UnitPanelParent);
+                unitpanelGO.name = UnitPanelPref.name + " " + unitType.ToString();
+                UnitPanelItem panelUI = unitpanelGO.GetComponent<UnitPanelItem>();
+                UnitSprite sprite = unitSprites.Find(e => e.ByUnitAndFaction(DeckBuilderController.Instance.DeckInBuilding.FactionsGet, unitType));
+                if (sprite != null)
+                {
+
+                    panelUI.Initialize(
+                   name,
+                   sprite.GetSprite,
+                   () => DeckBuilderController.Instance.DeckInBuilding.GetCountUnit(unitType),
+                   () => DeckBuilderController.Instance.Add(unitType),
+                   () => DeckBuilderController.Instance.Remove(unitType)
+                );
+                }
+
+            }
+            Debug.Log("UnitPanels Loaded");
+
+
+
+
+
+        }
+        public void Clear()
+        {
+            foreach (Transform child in UnitPanelParent)
+            {
+                Destroy(child.gameObject);
+            }
+        }
+        public void Reload()
+        {
+
+            LoadUnitsView();
+        }
+
+
+
+
+
+
+
+    }
+
+}

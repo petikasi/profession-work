@@ -1,9 +1,11 @@
 
 using System.Collections.Generic;
+using System.Linq;
 using Assets.GameScripts.Model.Game.GameController;
 using NUnit.Framework;
 using Unity.VisualScripting;
 using UnityEngine;
+using Assets.GameScripts.Persistence.Database;
 using UnityEngine.TestTools;
 
 public class BoardLayout : MonoBehaviour
@@ -28,6 +30,9 @@ public class BoardLayout : MonoBehaviour
     [SerializeField] private float scaleMin = 2.5f;
     [SerializeField] private float scaleMax = 4.5f;
     [SerializeField] private float pivotOffset = 0.5f;
+
+    [Header("DataBaseForUnits")]
+    [SerializeField] private UnitDatabase unitDatabase;
 
     private bool isGenerated = false;
 
@@ -154,25 +159,46 @@ public class BoardLayout : MonoBehaviour
 
     private void GenerateDecks()
     {
-        for (int i = 0; i < 10; i++)
+        var unitsToSpawn = DeckManagerController.Instance.SelectedDeck.GetHoleListUnit();
+
+        for (int i = 0; i < unitsToSpawn.Count; i++)
         {
-            int targetTileX = i + 2;
-            int targetTileZ = 0;
-            PlaceUnitAtTile(targetTileX, targetTileZ, unitPrefabs[0]);
+            UnitTypes type = unitsToSpawn[i];
+            UnitData data = unitDatabase.GetUnitData(type);
+
+            if (data != null)
+            {
+                // Típus lekérése név alapján (Reflection)
+                System.Type scriptType = System.Type.GetType(data.scriptClassName);
+
+                // Ha a script egy mappában (namespace-ben) van, használd a teljes nevet:
+                // System.Type.GetType("Assets.Scripts.Elven." + data.scriptClassName);
+
+                PlaceUnitAtTile(i + 2, 0, data.unitPrefab, scriptType ?? typeof(BaseUnit));
+            }
         }
     }
 
-    public void PlaceUnitAtTile(int x, int z, GameObject unitPrefab)
+    public BaseUnit PlaceUnitAtTile(int x, int y, GameObject unitPrefab, System.Type unitType)
     {
         float worldX = (x * sizeOfTile) + (sizeOfTile / 2f);
-        float worldZ = (z * sizeOfTile) + (sizeOfTile / 2f);
+        float worldZ = (y * sizeOfTile) + (sizeOfTile / 2f);
         Vector3 spawnPos = new(worldX, 0.5f, worldZ);
 
-        GameObject unit = Instantiate(unitPrefab, spawnPos, Quaternion.identity);
-        unit.transform.rotation = Quaternion.Euler(-90, 0, 0);
-        unit.name = $"Unit_{x}_{z}";
-    }
+        GameObject unitObj = Instantiate(unitPrefab, spawnPos, Quaternion.identity);
+        unitObj.transform.rotation = Quaternion.Euler(-90, 0, 0);
 
+        // Dependency Injection: Itt adjuk hozzá vagy kérjük le a komponenst típus alapján
+        BaseUnit unitScript = unitObj.GetComponent(unitType) as BaseUnit;
+
+        if (unitScript != null)
+        {
+            unitScript.TileX = x;
+            unitScript.TileY = y;
+        }
+
+        return unitScript;
+    }
     private void FitCameraToMap()
     {
         float centerX = (widthOfTable * sizeOfTile) / 2f;
@@ -189,7 +215,10 @@ public class BoardLayout : MonoBehaviour
         gridContainer.transform.parent = transform;
 
         Material lineMat = new(Shader.Find("Sprites/Default"));
-        lineMat.color = Color.black;
+
+        // Új szín beállítása: Szürke (0.5f) és 30%-os átlátszóság (0.3f)
+        // Color(R, G, B, A) -> 0 az átlátszó, 1 a telített
+        lineMat.color = new Color(0.5f, 0.5f, 0.5f, 0.3f);
 
         // Vízszintes vonalak
         for (int z = 0; z <= heightOfTable; z++)

@@ -16,8 +16,8 @@ using UnityEngine;
         public Factions Faction { get; set; }
         public Player Player { get; set; }
         public UnitTypes UnitType { get; set; }
-        public int X { get; set; }
-        public int Y { get; set; }
+        public int TileX { get; set; }
+        public int TileY { get; set; }
 
         protected abstract void InitializeStats();
 
