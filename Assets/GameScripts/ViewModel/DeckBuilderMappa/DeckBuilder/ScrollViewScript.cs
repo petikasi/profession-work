@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Assets.GameScripts.Model.Units;
-using Assets.GameScripts.ViewModel.Graphic;
+using Assets.GameScripts.ViewModel.CameraAndGrapichs.Grapic;
 using Mono.Cecil.Cil;
 using TMPro;
 using UnityEditor;
