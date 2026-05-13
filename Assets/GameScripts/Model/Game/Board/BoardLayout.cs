@@ -1,11 +1,11 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using Assets.GameScripts.Model.Game.Board;
 using Assets.GameScripts.Model.Game.GameController;
 using NUnit.Framework;
 using Unity.VisualScripting;
 using UnityEngine;
-using Assets.GameScripts.Persistence.Database;
 using UnityEngine.TestTools;
 
 public class BoardLayout : MonoBehaviour
@@ -19,7 +19,7 @@ public class BoardLayout : MonoBehaviour
     [SerializeField] private Material grassMaterial;
 
     [Header("Prefabs")]
-    [SerializeField] private GameObject[] unitPrefabs;
+    [SerializeField] private GameObject[] prefabs;
     [SerializeField] private GameObject[] baseGrassPrefabs;
     [SerializeField] private GameObject[] detailFlowerPrefabs;
 
@@ -31,10 +31,8 @@ public class BoardLayout : MonoBehaviour
     [SerializeField] private float scaleMax = 4.5f;
     [SerializeField] private float pivotOffset = 0.5f;
 
-    [Header("DataBaseForUnits")]
-    [SerializeField] private UnitDatabase unitDatabase;
-
     private bool isGenerated = false;
+    private UnitRegistry unitRegistry;
 
     public void GenerateBoardLayout()
     {
@@ -159,22 +157,28 @@ public class BoardLayout : MonoBehaviour
 
     private void GenerateDecks()
     {
-        var unitsToSpawn = DeckManagerController.Instance.SelectedDeck.GetHoleListUnit();
+        // 1. Példányosítás
+        UnitRegistry registry = new UnitRegistry();
+
+        registry.InitializeRegistry(this.prefabs);
+
+        var selectedDeck = DeckManagerController.Instance.SelectedDeck;
+        var unitsToSpawn = selectedDeck.GetHoleListUnit();
+        Factions faction = selectedDeck.FactionsGet; 
 
         for (int i = 0; i < unitsToSpawn.Count; i++)
         {
             UnitTypes type = unitsToSpawn[i];
-            UnitData data = unitDatabase.GetUnitData(type);
+            UnitRegistryEntry entry = registry.GetEntry(type, faction);
 
-            if (data != null)
+            if (entry != null)
             {
-                // Típus lekérése név alapján (Reflection)
-                System.Type scriptType = System.Type.GetType(data.scriptClassName);
 
-                // Ha a script egy mappában (namespace-ben) van, használd a teljes nevet:
-                // System.Type.GetType("Assets.Scripts.Elven." + data.scriptClassName);
-
-                PlaceUnitAtTile(i + 2, 0, data.unitPrefab, scriptType ?? typeof(BaseUnit));
+                PlaceUnitAtTile(i % widthOfTable, i / widthOfTable, entry.Prefab, entry.ScriptType);
+            }
+            else
+            {
+                Debug.LogError($"Nincs regisztrálva az egység: {type} a következõ frakcióhoz: {faction}");
             }
         }
     }

@@ -253,13 +253,31 @@ MonoBehaviour:
   heightOfTable: 20
   sizeOfTile: 10
   grassMaterial: {fileID: 2100000, guid: bc688f85a29da6548a198a27784a8736, type: 2}
-  unitPrefabs:
-  - {fileID: 100000, guid: dc780bbe80163bc46883e8c2d96af493, type: 3}
-  - {fileID: 100000, guid: 5538ed982796ebd4c8cc731f2b530e42, type: 3}
-  - {fileID: 100000, guid: 25f5852bdc32bf74790bd0cfd333a532, type: 3}
-  - {fileID: 100000, guid: b66f4744e8bb24a448fcfa81a1781df5, type: 3}
-  - {fileID: 100000, guid: 63372fdecc46ca243992469e037a3b89, type: 3}
-  - {fileID: 100000, guid: 6a678404afed8a84499291f5b2dc6a73, type: 3}
+  prefabs:
+  - {fileID: 1000013557280178, guid: d992acfff4e84c44e97513dc227b06b7, type: 3}
+  - {fileID: 1000013557280178, guid: d992acfff4e84c44e97513dc227b06b7, type: 3}
+  - {fileID: 1000013557280178, guid: d992acfff4e84c44e97513dc227b06b7, type: 3}
+  - {fileID: 1000013557280178, guid: d992acfff4e84c44e97513dc227b06b7, type: 3}
+  - {fileID: 1000013557280178, guid: d992acfff4e84c44e97513dc227b06b7, type: 3}
+  - {fileID: 1000013557280178, guid: d992acfff4e84c44e97513dc227b06b7, type: 3}
+  - {fileID: 1000013557280178, guid: d992acfff4e84c44e97513dc227b06b7, type: 3}
+  - {fileID: 1000013557280178, guid: d992acfff4e84c44e97513dc227b06b7, type: 3}
+  - {fileID: 1000013557280178, guid: d992acfff4e84c44e97513dc227b06b7, type: 3}
+  - {fileID: 1000013557280178, guid: d992acfff4e84c44e97513dc227b06b7, type: 3}
+  - {fileID: 1000013557280178, guid: d992acfff4e84c44e97513dc227b06b7, type: 3}
+  - {fileID: 1000013557280178, guid: d992acfff4e84c44e97513dc227b06b7, type: 3}
+  - {fileID: 1000013427829390, guid: 1700328aaf96fd243a71d862897619a4, type: 3}
+  - {fileID: 1000013427829390, guid: 1700328aaf96fd243a71d862897619a4, type: 3}
+  - {fileID: 1000013427829390, guid: 1700328aaf96fd243a71d862897619a4, type: 3}
+  - {fileID: 1000013427829390, guid: 1700328aaf96fd243a71d862897619a4, type: 3}
+  - {fileID: 1000013427829390, guid: 1700328aaf96fd243a71d862897619a4, type: 3}
+  - {fileID: 1000013427829390, guid: 1700328aaf96fd243a71d862897619a4, type: 3}
+  - {fileID: 1000013427829390, guid: 1700328aaf96fd243a71d862897619a4, type: 3}
+  - {fileID: 1000013427829390, guid: 1700328aaf96fd243a71d862897619a4, type: 3}
+  - {fileID: 1000013427829390, guid: 1700328aaf96fd243a71d862897619a4, type: 3}
+  - {fileID: 1000013427829390, guid: 1700328aaf96fd243a71d862897619a4, type: 3}
+  - {fileID: 1000013427829390, guid: 1700328aaf96fd243a71d862897619a4, type: 3}
+  - {fileID: 1000013427829390, guid: 1700328aaf96fd243a71d862897619a4, type: 3}
   baseGrassPrefabs:
   - {fileID: 1247257282136298470, guid: 5c66cb833d5ced841815bf061077f803, type: 3}
   detailFlowerPrefabs:
