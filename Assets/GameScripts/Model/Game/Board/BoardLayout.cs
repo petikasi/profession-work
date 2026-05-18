@@ -135,7 +135,7 @@ public class BoardLayout : MonoBehaviour
 
         for (int s = 0; s < densityPerTile; s++)
         {
-            GameObject prefab = (Random.value < 0.7f) ? baseGrassPrefabs[0] : detailFlowerPrefabs[0];
+            GameObject prefab = (Random.value < 0.7f) ? baseGrassPrefabs[Random.Range(0, baseGrassPrefabs.Length-1)] : detailFlowerPrefabs[Random.Range(0, detailFlowerPrefabs.Length-1)];
             float jitter = tileWidth * 0.6f;
             Vector3 pos = new(
                 xBase + Random.Range(-jitter, jitter),
@@ -158,13 +158,12 @@ public class BoardLayout : MonoBehaviour
     private void GenerateDecks()
     {
         // 1. Példányosítás
-        UnitRegistry registry = new UnitRegistry();
+        UnitRegistry registry = new();
 
         registry.InitializeRegistry(this.prefabs);
 
-        var selectedDeck = DeckManagerController.Instance.SelectedDeck;
-        var unitsToSpawn = selectedDeck.GetHoleListUnit();
-        Factions faction = selectedDeck.FactionsGet; 
+        var unitsToSpawn = DeckManagerController.Instance.SelectedDeck.GetHoleListUnit();
+        Factions faction = DeckManagerController.Instance.SelectedDeck.FactionsGet; 
 
         for (int i = 0; i < unitsToSpawn.Count; i++)
         {
@@ -178,7 +177,7 @@ public class BoardLayout : MonoBehaviour
             }
             else
             {
-                Debug.LogError($"Nincs regisztrálva az egység: {type} a következõ frakcióhoz: {faction}");
+                Debug.LogError($"Unit is not registrated: {type} to the current faction : {faction}");
             }
         }
     }
