@@ -280,8 +280,13 @@ MonoBehaviour:
   - {fileID: 1000013427829390, guid: 1700328aaf96fd243a71d862897619a4, type: 3}
   baseGrassPrefabs:
   - {fileID: 1247257282136298470, guid: 5c66cb833d5ced841815bf061077f803, type: 3}
+  - {fileID: 1247257282136298470, guid: 834a07262b2c74048b735718d570bce5, type: 3}
   detailFlowerPrefabs:
+  - {fileID: 1247257282136298470, guid: 87dba8c9780f07b458b5e1e32cad4d29, type: 3}
+  - {fileID: 1247257282136298470, guid: c032e3bc1f79cfb47b052262d701a8d4, type: 3}
   - {fileID: 1247257282136298470, guid: 305facc97cf265d43906aa3072a2676b, type: 3}
+  - {fileID: 1247257282136298470, guid: 8eaa423f961b12049ac50ade3d605361, type: 3}
+  - {fileID: 1247257282136298470, guid: 15abb246c7417bb43b3b165c9c26d045, type: 3}
   decorationChance: 1
   densityPerTile: 25
   scaleMin: 1.2

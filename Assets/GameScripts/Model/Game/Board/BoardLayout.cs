@@ -211,7 +211,6 @@ public class BoardLayout : MonoBehaviour
         Camera.main.transform.LookAt(new Vector3(centerX, 0, centerZ));
     }
 
-    // ELTÁVOLÍTOTTUK A PARAMÉTEREKET, mert az osztály változóit használjuk
     private void GenerateGridLines()
     {
         GameObject gridContainer = new("GridContainer");
@@ -244,18 +243,47 @@ public class BoardLayout : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Létrehoz egy egyenest a 3D térben két pont között egy LineRenderer komponens segítségével.
+    /// </summary>
+    /// <param name="start">A vonal kezdõpontjának világkoordinátája (Vector3)</param>
+    /// <param name="end">A vonal végpontjának világkoordinátája (Vector3)</param>
+    /// <param name="parent">A szülõ objektum (Transform), ami alá a létrejött vonal strukturálisan tartozni fog</param>
+    /// <param name="mat">A vonal megjelenítéséhez használt anyag (Material/Shader)</param>
     private void CreateLine(Vector3 start, Vector3 end, Transform parent, Material mat)
     {
+        // 1. Létrehozunk egy teljesen új, üres GameObjectet a hierarchiában "GridLine" névvel
         GameObject lineObj = new("GridLine");
+
+        // 2. Beállítjuk a vonal objektum szülõjét, hogy ne ömlesztve legyen a Scene gyökerében (pl. a Grid alá)
         lineObj.transform.parent = parent;
+
+        // 3. Rápakolunk egy LineRenderer komponenst a frissen létrehozott objektumra, ez felel a vonal kirajzolásáért
         LineRenderer lr = lineObj.AddComponent<LineRenderer>();
+
+        // 4. Átadjuk a kapott anyagot (színt/textúrát) a LineRenderernek, különben csúnya rózsaszín (Missing Material) lenne
         lr.material = mat;
+
+        // 5. Beállítjuk a vonal vastagságát a kezdõpontjánál (0.5 egység széles)
         lr.startWidth = 0.5f;
+
+        // 6. Beállítjuk a vonal vastagságát a végpontjánál (mivel ez is 0.5f, így végig egyenletes vastagságú lesz)
         lr.endWidth = 0.5f;
+
+        // 7. Engedélyezzük a világkoordináták használatát. Ha a szülõ objektum elmozdul, a vonal pontjai fixen a helyükön maradnak
         lr.useWorldSpace = true;
+
+        // 8. Megadjuk, hogy a vonalunk hány töréspontból áll. Mivel ez egy egyenes, pontosan 2 pontra van szükségünk
         lr.positionCount = 2;
+
+        // 9. Beállítjuk a vonal legelsõ pontját (0-s index) a megadott kezdõpont koordinátáira
         lr.SetPosition(0, start);
+
+        // 10. Beállítjuk a vonal második pontját (1-es index) a megadott végpont koordinátáira
         lr.SetPosition(1, end);
+
+        // 11. Statikusnak jelöljük az objektumot. Mivel a rácsvonalak nem mozognak a játék alatt, 
+        // ez segít a Unity-nek optimalizálni a renderelést (Batching), így jobb lesz a teljesítmény (FPS)
         lineObj.isStatic = true;
     }
 }
