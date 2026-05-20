@@ -3183,6 +3183,7 @@ GameObject:
   - component: {fileID: 724499154}
   - component: {fileID: 724499156}
   - component: {fileID: 724499155}
+  - component: {fileID: 724499157}
   m_Layer: 5
   m_Name: UnitPanel
   m_TagString: Untagged
@@ -3207,7 +3208,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: -125}
-  m_SizeDelta: {x: -300, y: -450}
+  m_SizeDelta: {x: -400, y: -450}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &724499155
 MonoBehaviour:
@@ -3222,7 +3223,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 0, b: 0, a: 0.392}
+  m_Color: {r: 1, g: 1, b: 1, a: 0}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -3247,6 +3248,32 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 724499153}
   m_CullTransparentMesh: 1
+--- !u!114 &724499157
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 724499153}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 30649d3a9faa99c48a7b1166b86bf2a0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.HorizontalLayoutGroup
+  m_Padding:
+    m_Left: 30
+    m_Right: 30
+    m_Top: 10
+    m_Bottom: 10
+  m_ChildAlignment: 3
+  m_Spacing: 10
+  m_ChildForceExpandWidth: 0
+  m_ChildForceExpandHeight: 0
+  m_ChildControlWidth: 1
+  m_ChildControlHeight: 1
+  m_ChildScaleWidth: 0
+  m_ChildScaleHeight: 0
+  m_ReverseArrangement: 0
 --- !u!1 &739842865
 GameObject:
   m_ObjectHideFlags: 0
@@ -7615,6 +7642,7 @@ GameObject:
   - component: {fileID: 1573355271}
   - component: {fileID: 1573355270}
   - component: {fileID: 1573355269}
+  - component: {fileID: 1573355273}
   m_Layer: 5
   m_Name: UnitsCanvas
   m_TagString: Untagged
@@ -7680,7 +7708,7 @@ Canvas:
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
   m_VertexColorAlwaysGammaSpace: 1
-  m_AdditionalShaderChannelsFlag: 0
+  m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
   m_SortingOrder: 0
@@ -7705,6 +7733,20 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!114 &1573355273
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1573355268}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cbea7e89afcea32419994b411b1618b8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UnitCanvas
+  unitCountPanelPrefab: {fileID: 2018276013071054467, guid: de82d68844af7c846a61e7e24739bd6b, type: 3}
+  unitCountPanelParent: {fileID: 724499154}
 --- !u!1 &1596070574
 GameObject:
   m_ObjectHideFlags: 0

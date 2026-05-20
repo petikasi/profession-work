@@ -45,9 +45,6 @@ public class BoardLayout : MonoBehaviour
         // 2. Növényzet szórása
         PopulateEntireMeadow(widthOfTable, heightOfTable, sizeOfTile);
 
-        // 3. Egységek lehelyezése
-        GenerateDecks();
-
         // 4. Kamera pozicionálása
         FitCameraToMap();
 
@@ -154,34 +151,6 @@ public class BoardLayout : MonoBehaviour
             }
         }
     }
-
-    private void GenerateDecks()
-    {
-        // 1. Példányosítás
-        UnitRegistry registry = new();
-
-        registry.InitializeRegistry(this.prefabs);
-
-        var unitsToSpawn = DeckManagerController.Instance.SelectedDeck.GetHoleListUnit();
-        Factions faction = DeckManagerController.Instance.SelectedDeck.FactionsGet; 
-
-        for (int i = 0; i < unitsToSpawn.Count; i++)
-        {
-            UnitTypes type = unitsToSpawn[i];
-            UnitRegistryEntry entry = registry.GetEntry(type, faction);
-
-            if (entry != null)
-            {
-
-                PlaceUnitAtTile(i % widthOfTable, i / widthOfTable, entry.Prefab, entry.ScriptType);
-            }
-            else
-            {
-                Debug.LogError($"Unit is not registrated: {type} to the current faction : {faction}");
-            }
-        }
-    }
-
     public BaseUnit PlaceUnitAtTile(int x, int y, GameObject unitPrefab, System.Type unitType)
     {
         float worldX = (x * sizeOfTile) + (sizeOfTile / 2f);

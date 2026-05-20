@@ -1,11 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
-using NUnit.Framework;
-using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
 using GameScripts.Model.Units;
+using System.Linq;
 [Serializable]
 public class Deck
 {
@@ -112,27 +109,12 @@ public class Deck
 
 
     }
-
     #endregion
 
     #region Setters
-    public List<UnitTypes> GetCountofUnits(Func<UnitTypes, bool> predicate)
+    public int  GetCountofUnits(UnitTypes predicate)
     {
-        List<UnitTypes> searchedunits = new();
-
-        foreach (UnitTypes u in starterDeck)
-        {
-
-            foreach (var unit in starterDeck)
-            {
-                if (predicate(unit))
-                    searchedunits.Add(unit);
-            }
-
-
-        }
-        return searchedunits;
-
+       return  starterDeck.Where(unit => unit == predicate).ToList().Count;
     }
     #endregion
 
