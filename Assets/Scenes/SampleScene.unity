@@ -230,6 +230,7 @@ GameObject:
   - component: {fileID: 46322519}
   - component: {fileID: 46322518}
   - component: {fileID: 46322520}
+  - component: {fileID: 46322521}
   m_Layer: 0
   m_Name: BoardLayout
   m_TagString: Untagged
@@ -320,6 +321,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Assets.GameScripts.Model.Game.Board.PlayerInput
   sizeOfTile: 10
+--- !u!114 &46322521
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 46322517}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d82ad24b7f51004d9be7abde9a0bf2c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GameController
 --- !u!1 &96209368
 GameObject:
   m_ObjectHideFlags: 0

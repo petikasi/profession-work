@@ -13,7 +13,7 @@ namespace Assets.GameScripts.ViewModel.Game.UnitHolder
         [SerializeField] private Transform unitCountPanelParent;
 
         // Itt tároljuk a legenerált kártyákat
-        private List<UnitCountpanel> unitPanels = new List<UnitCountpanel>();
+        private List<UnitCountpanel> unitPanels = new();
 
         void Start()
         {
@@ -53,7 +53,7 @@ namespace Assets.GameScripts.ViewModel.Game.UnitHolder
                 GameObject newCardObj = Instantiate(unitCountPanelPrefab, unitCountPanelParent);
                 newCardObj.name = $"UnitCard_{currentFaction}_{unitType}";
 
-                UnitCountpanel newPanel = new UnitCountpanel();
+                UnitCountpanel newPanel = new();
                 if (newPanel == null)
                 {
                     newPanel = newCardObj.GetComponentInChildren<UnitCountpanel>();

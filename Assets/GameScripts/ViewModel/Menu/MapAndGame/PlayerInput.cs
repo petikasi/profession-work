@@ -34,8 +34,13 @@ namespace Assets.GameScripts.ViewModel.MapAndGame
                     int tileZ = Mathf.FloorToInt(hit.point.z / sizeOfTile);
 
                     Debug.Log($"Clicked Tile: {tileX}, {tileZ}");
+                    Debug.Log(GameController.Instance);
+                    GameController.Instance.CallPlacing(tileX, tileZ);
+
+
                 }
             }
+
         }
     }
 }

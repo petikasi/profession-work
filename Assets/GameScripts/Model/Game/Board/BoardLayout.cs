@@ -10,6 +10,9 @@ using UnityEngine.TestTools;
 
 public class BoardLayout : MonoBehaviour
 {
+
+    public static BoardLayout Instance { get; private set; }
+
     [Header("Board Settings")]
     [SerializeField] private int widthOfTable = 15;
     [SerializeField] private int heightOfTable = 10;
@@ -32,7 +35,19 @@ public class BoardLayout : MonoBehaviour
     [SerializeField] private float pivotOffset = 0.5f;
 
     private bool isGenerated = false;
-    private UnitRegistry unitRegistry;
+    private UnitRegistry unitRegistry = new();
+
+    void Awake()
+    {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            
+            return;
+        }
+
+        Instance = this;
+    }
 
     public void GenerateBoardLayout()
     {
@@ -53,6 +68,11 @@ public class BoardLayout : MonoBehaviour
 
         // 6. Optimalizálás (Batching)
         StaticBatchingUtility.Combine(gameObject);
+
+        Debug.Log(prefabs);
+        Debug.Log(baseGrassPrefabs);
+        Debug.Log(detailFlowerPrefabs);
+        unitRegistry.InitializeRegistry(prefabs);
     }
 
     //Ez a methódus feleõs a pálya legenerálásáért
@@ -151,22 +171,43 @@ public class BoardLayout : MonoBehaviour
             }
         }
     }
-    public BaseUnit PlaceUnitAtTile(int x, int y, GameObject unitPrefab, System.Type unitType)
+    public BaseUnit PlaceUnitAtTile(int x, int y, Factions fac, UnitTypes unit)
     {
+        Debug.Log(fac);
+        Debug.Log(x);
+        Debug.Log(y);
+        Debug.Log(unit);
+        Debug.Log(unitRegistry.GetEntry(unit, fac));
+        UnitRegistryEntry entry = unitRegistry.GetEntry(unit, fac);
+
+        if (entry == null)
+        {
+            Debug.LogError($"BoardLayout: Nem található bejegyzés a regiszterben ehhez az egységhez: {fac} - {unit}");
+            return null;
+        }
+
         float worldX = (x * sizeOfTile) + (sizeOfTile / 2f);
         float worldZ = (y * sizeOfTile) + (sizeOfTile / 2f);
         Vector3 spawnPos = new(worldX, 0.5f, worldZ);
 
-        GameObject unitObj = Instantiate(unitPrefab, spawnPos, Quaternion.identity);
+        GameObject unitObj = Instantiate(entry.Prefab, spawnPos, Quaternion.identity);
         unitObj.transform.rotation = Quaternion.Euler(-90, 0, 0);
 
-        // Dependency Injection: Itt adjuk hozzá vagy kérjük le a komponenst típus alapján
-        BaseUnit unitScript = unitObj.GetComponent(unitType) as BaseUnit;
-
+        // 4. Lekérjük a komponenst a regiszterbõl kapott pontos C# Típus alapján!
+        // (Itt a korábbi 'unitType' helyett az 'entry.UnitType'-ot használjuk, pl. typeof(OrkArtillery))
+        BaseUnit unitScript = unitObj.GetComponent(entry.ScriptType) as BaseUnit;
+        Debug.Log(unitScript);
+        Debug.Log(unitObj);
+        Debug.Log(entry.ScriptType);
         if (unitScript != null)
         {
+            // Elmentjük a koordinátákat az egységbe
             unitScript.TileX = x;
             unitScript.TileY = y;
+        }
+        else
+        {
+            Debug.LogError($"BoardLayout: A legyártott objektumon nem található a kért '{entry.ScriptType.Name}' komponens!");
         }
 
         return unitScript;
