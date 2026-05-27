@@ -84,5 +84,15 @@ namespace Assets.GameScripts.ViewModel.Game.UnitHolder
             }
         }
 
+        public void IncreaseCount()
+        {
+            currentCount++;
+
+            if (unitCountText != null)
+            {
+                unitCountText.text = currentCount.ToString();
+            }
+        }
+
     }
 }

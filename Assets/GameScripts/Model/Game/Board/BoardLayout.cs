@@ -196,12 +196,18 @@ public class BoardLayout : MonoBehaviour
         // 4. Lekérjük a komponenst a regiszterbõl kapott pontos C# Típus alapján!
         // (Itt a korábbi 'unitType' helyett az 'entry.UnitType'-ot használjuk, pl. typeof(OrkArtillery))
         BaseUnit unitScript = unitObj.GetComponent(entry.ScriptType) as BaseUnit;
-        Debug.Log(unitScript);
-        Debug.Log(unitObj);
-        Debug.Log(entry.ScriptType);
+
+        // --- JAVÍTÁS: Ha nincs rajta a script, kódból rákényszerítjük! ---
+        if (unitScript == null)
+        {
+            // Az AddComponent dinamikusan rárakja a pontos C# osztályt (pl. HumanMelee) a 3D modellre
+            unitScript = unitObj.AddComponent(entry.ScriptType) as BaseUnit;
+
+            Debug.Log($"BoardLayout: A script nem volt rajta a Prefabon, ezért dinamikusan hozzáadtam a következõt: {entry.ScriptType.Name}");
+        }
+
         if (unitScript != null)
         {
-            // Elmentjük a koordinátákat az egységbe
             unitScript.TileX = x;
             unitScript.TileY = y;
         }
