@@ -1,3 +1,4 @@
+using Assets.GameScripts.ViewModel.Game.UnitHolder;
 using UnityEngine;
 
 
@@ -12,12 +13,12 @@ using UnityEngine;
         public int Range { get; protected set; }
 
         public int Initiate { get; protected set; }
-
+        public UnitCountpanel MyCardPanel { get; set; }
         public Factions Faction { get; set; }
         public Player Player { get; set; }
         public UnitTypes UnitType { get; set; }
         public int TileX { get; set; }
-        public int TileY { get; set; }
+        public int TileZ { get; set; }
 
         protected abstract void InitializeStats();
 

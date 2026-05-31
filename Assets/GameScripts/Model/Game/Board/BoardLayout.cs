@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Assets.GameScripts.Model.Game.Board;
 using Assets.GameScripts.Model.Game.GameController;
+using Assets.GameScripts.ViewModel.Game.UnitHolder;
 using NUnit.Framework;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -171,13 +172,8 @@ public class BoardLayout : MonoBehaviour
             }
         }
     }
-    public BaseUnit PlaceUnitAtTile(int x, int y, Factions fac, UnitTypes unit)
+    public BaseUnit PlaceUnitAtTile(int x, int z, Factions fac, UnitTypes unit, UnitCountpanel cardPanel)
     {
-        Debug.Log(fac);
-        Debug.Log(x);
-        Debug.Log(y);
-        Debug.Log(unit);
-        Debug.Log(unitRegistry.GetEntry(unit, fac));
         UnitRegistryEntry entry = unitRegistry.GetEntry(unit, fac);
 
         if (entry == null)
@@ -187,7 +183,7 @@ public class BoardLayout : MonoBehaviour
         }
 
         float worldX = (x * sizeOfTile) + (sizeOfTile / 2f);
-        float worldZ = (y * sizeOfTile) + (sizeOfTile / 2f);
+        float worldZ = (z * sizeOfTile) + (sizeOfTile / 2f);
         Vector3 spawnPos = new(worldX, 0.5f, worldZ);
 
         GameObject unitObj = Instantiate(entry.Prefab, spawnPos, Quaternion.identity);
@@ -209,7 +205,8 @@ public class BoardLayout : MonoBehaviour
         if (unitScript != null)
         {
             unitScript.TileX = x;
-            unitScript.TileY = y;
+            unitScript.TileZ = z; 
+            unitScript.MyCardPanel = cardPanel;
         }
         else
         {
@@ -217,6 +214,12 @@ public class BoardLayout : MonoBehaviour
         }
 
         return unitScript;
+    }
+
+    public void RemoveUnitFromTile(int x, int y)
+    {
+
+
     }
     private void FitCameraToMap()
     {
