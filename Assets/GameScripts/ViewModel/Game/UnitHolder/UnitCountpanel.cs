@@ -19,6 +19,7 @@ namespace Assets.GameScripts.ViewModel.Game.UnitHolder
         private UnitTypes myType;
         private Factions myFaction;
         private int currentCount;
+        private bool zeroFromUnit= false;
 
         /// <summary>
         /// Ezt a függvényt hívja meg a UnitCanvas, amikor létrehozza a panelt.
@@ -77,10 +78,10 @@ namespace Assets.GameScripts.ViewModel.Game.UnitHolder
                 unitCountText.text = currentCount.ToString();
             }
 
-            // Ha az utolsó darab is elfogyott, elszürkítjük a panelt
-            if (currentCount <= 0 && unitImage != null)
+            if (currentCount <= 0 && !zeroFromUnit)
             {
-                unitImage.color = new Color(0.3f, 0.3f, 0.3f, 0.5f);
+                unitImage.color = new Color(0.7f, 0.7f, 0.7f, 1.0f);
+                zeroFromUnit = true;
             }
         }
 
@@ -91,6 +92,18 @@ namespace Assets.GameScripts.ViewModel.Game.UnitHolder
             if (unitCountText != null)
             {
                 unitCountText.text = currentCount.ToString();
+            }
+            // Ha eddig le volt merülve (true volt), de most már újra nagyobb mint 0 a darabszám
+            if (currentCount > 0 && zeroFromUnit)
+            {
+                if (unitImage != null)
+                {
+                    // Visszaállítjuk az eredeti, élénk, nem átlátszó színt (RGB: 1,1,1, Alpha: 1)
+                    unitImage.color = Color.white;
+                }
+
+                // Visszaállítjuk a flaget, hiszen már nincs 0-n a számláló
+                zeroFromUnit = false;
             }
         }
 

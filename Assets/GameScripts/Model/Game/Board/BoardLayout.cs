@@ -19,6 +19,9 @@ public class BoardLayout : MonoBehaviour
     [SerializeField] private int heightOfTable = 10;
     [SerializeField] private int sizeOfTile = 10;
 
+    [Header("Floor")]
+    private GameObject floor;
+
     [Header("Materials")]
     [SerializeField] private Material grassMaterial;
 
@@ -70,16 +73,24 @@ public class BoardLayout : MonoBehaviour
         // 6. Optimalizálás (Batching)
         StaticBatchingUtility.Combine(gameObject);
 
-        Debug.Log(prefabs);
-        Debug.Log(baseGrassPrefabs);
-        Debug.Log(detailFlowerPrefabs);
+        //8.Szótár inicializálása
         unitRegistry.InitializeRegistry(prefabs);
+
+        //9.Kijelölni hova lehet tenni az egységeket
+        CreateAreaForUnits();
+
+
     }
 
-    //Ez a methódus feleõs a pálya legenerálásáért
-    private void GenerateOneBigFloor(int tileCountX, int tileCountY, float tileWidth)
+    /// <summary>
+    /// Létrehoz a pályát(1 nagy gameobjectként kezeljük).
+    /// </summary>
+    ///    /// <param name="tileCountX">A pálya szélessége (hány db egység széles a pálya) </param>
+    /// <param name="tileCountZ">A pálya hosszúsága (hány db egység hosszú a pálya)</param>
+    /// <param name="tileWidth">Ehy egység hossza (és mivel négyzet ezért széllesége is)</param>
+    private void GenerateOneBigFloor(int tileCountX, int tileCountZ, float tileWidth)
     {
-        GameObject floor = new("GrandFloor");
+        floor = new("GrandFloor");
         floor.transform.parent = transform;
         floor.isStatic = true;
 
@@ -88,11 +99,11 @@ public class BoardLayout : MonoBehaviour
         meshRenderer.material = grassMaterial;
 
         Mesh mesh = new();
-        int vCount = (tileCountX + 1) * (tileCountY + 1);
+        int vCount = (tileCountX + 1) * (tileCountZ + 1);
         Vector3[] vertices = new Vector3[vCount];
         Vector2[] uvs = new Vector2[vCount];
 
-        for (int n = 0, z = 0; z <= tileCountY; z++)
+        for (int n = 0, z = 0; z <= tileCountZ; z++)
         {
             for (int x = 0; x <= tileCountX; x++)
             {
@@ -102,10 +113,10 @@ public class BoardLayout : MonoBehaviour
             }
         }
 
-        int[] triangles = new int[tileCountX * tileCountY * 6];
+        int[] triangles = new int[tileCountX * tileCountZ * 6];
         int vert = 0;
         int tris = 0;
-        for (int z = 0; z < tileCountY; z++)
+        for (int z = 0; z < tileCountZ; z++)
         {
             for (int x = 0; x < tileCountX; x++)
             {
@@ -128,6 +139,7 @@ public class BoardLayout : MonoBehaviour
         meshFilter.mesh = mesh;
         floor.AddComponent<MeshCollider>();
     }
+
 
     private void PopulateEntireMeadow(int tileCountX, int tileCountY, float tileWidth)
     {
@@ -215,12 +227,6 @@ public class BoardLayout : MonoBehaviour
 
         return unitScript;
     }
-
-    public void RemoveUnitFromTile(int x, int y)
-    {
-
-
-    }
     private void FitCameraToMap()
     {
         float centerX = (widthOfTable * sizeOfTile) / 2f;
@@ -304,5 +310,52 @@ public class BoardLayout : MonoBehaviour
         // 11. Statikusnak jelöljük az objektumot. Mivel a rácsvonalak nem mozognak a játék alatt, 
         // ez segít a Unity-nek optimalizálni a renderelést (Batching), így jobb lesz a teljesítmény (FPS)
         lineObj.isStatic = true;
+    }
+
+    private void CreateAreaForUnits() 
+    {
+        float zoneWidth = widthOfTable * sizeOfTile;
+        float zoneHeight = 5 * sizeOfTile;
+
+        // 1. Játékos zónája (Az elsõ 5 sor: Z = 0-tól 50-ig)
+        // Középpont kiszámítása: X a pálya fele, Z a zóna magasságának a fele
+        Vector3 p1Center = new Vector3(zoneWidth / 2f, 0.01f, zoneHeight / 2f); // 0.01f magasság, hogy a padló felett lebegjen picivel (z-fighting ellen)
+        CreateZoneVisual(p1Center, zoneWidth, zoneHeight, "Player1_Zone");
+
+        // 2. Játékos zónája (Az utolsó 5 sor: a pálya végétõl visszafelé 50 egység)
+        float fullMapHeight = heightOfTable * sizeOfTile;
+        Vector3 p2Center = new Vector3(zoneWidth / 2f, 0.01f, fullMapHeight - (zoneHeight / 2f));
+        CreateZoneVisual(p2Center, zoneWidth, zoneHeight, "Player2_Zone");
+
+
+    }
+
+    private void CreateZoneVisual(Vector3 center, float width, float height, string name)
+    {
+        // Létrehozunk egy egyszerû lapos Unity 3D síkot
+        GameObject zone = GameObject.CreatePrimitive(PrimitiveType.Quad);
+        zone.name = name;
+        zone.transform.SetParent(floor.transform); // Beletesszük a nagy Floorba, hogy együtt mozogjanak
+
+        // Pozicionálás és méretezés
+        zone.transform.position = center;
+        zone.transform.rotation = Quaternion.Euler(90, 0, 0); // Lefektetjük a földre
+        zone.transform.localScale = new Vector3(width, height, 1f);
+
+        // Töröljük a MeshCollidert, hogy a Raycast ne ebbe akadjon bele, hanem átmenjen a GrandFloorra!
+        if (zone.TryGetComponent<MeshCollider>(out var collider))
+        {
+            Destroy(collider);
+        }
+
+        // Színezés: Létrehozunk neki egy félig átlátszó sötét színt
+        if (zone.TryGetComponent<MeshRenderer>(out var renderer))
+        {
+            // A Unity beépített transzparens shaderét használjuk
+            renderer.material = new Material(Shader.Find("Sprites/Default"));
+
+            // Fekete, de 30%-os átlátszósággal (Alpha = 0.3f), így csak picit sötétíti a füvet alatta
+            renderer.material.color = new Color(0f, 0f, 0f, 0.3f);
+        }
     }
 }
