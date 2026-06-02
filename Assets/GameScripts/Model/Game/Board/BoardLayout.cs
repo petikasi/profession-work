@@ -319,12 +319,12 @@ public class BoardLayout : MonoBehaviour
 
         // 1. Játékos zónája (Az elsõ 5 sor: Z = 0-tól 50-ig)
         // Középpont kiszámítása: X a pálya fele, Z a zóna magasságának a fele
-        Vector3 p1Center = new Vector3(zoneWidth / 2f, 0.01f, zoneHeight / 2f); // 0.01f magasság, hogy a padló felett lebegjen picivel (z-fighting ellen)
+        Vector3 p1Center = new (zoneWidth / 2f, 0.01f, zoneHeight / 2f); // 0.01f magasság, hogy a padló felett lebegjen picivel (z-fighting ellen)
         CreateZoneVisual(p1Center, zoneWidth, zoneHeight, "Player1_Zone");
 
         // 2. Játékos zónája (Az utolsó 5 sor: a pálya végétõl visszafelé 50 egység)
         float fullMapHeight = heightOfTable * sizeOfTile;
-        Vector3 p2Center = new Vector3(zoneWidth / 2f, 0.01f, fullMapHeight - (zoneHeight / 2f));
+        Vector3 p2Center = new (zoneWidth / 2f, 0.01f, fullMapHeight - (zoneHeight / 2f));
         CreateZoneVisual(p2Center, zoneWidth, zoneHeight, "Player2_Zone");
 
 
@@ -356,6 +356,24 @@ public class BoardLayout : MonoBehaviour
 
             // Fekete, de 30%-os átlátszósággal (Alpha = 0.3f), így csak picit sötétíti a füvet alatta
             renderer.material.color = new Color(0f, 0f, 0f, 0.3f);
+        }
+    }
+
+
+    public void RemoveZoneVisuals()
+    {
+        // Megkeressük az elsõ játékos zónáját a floor gyerekei között
+        Transform p1Zone = floor.transform.Find("Player1_Zone");
+        if (p1Zone != null)
+        {
+            Destroy(p1Zone.gameObject);
+        }
+
+        // Megkeressük a második játékos zónáját
+        Transform p2Zone = floor.transform.Find("Player2_Zone");
+        if (p2Zone != null)
+        {
+            Destroy(p2Zone.gameObject);
         }
     }
 }
