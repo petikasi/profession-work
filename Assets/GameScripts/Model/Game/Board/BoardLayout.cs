@@ -184,7 +184,7 @@ public class BoardLayout : MonoBehaviour
             }
         }
     }
-    public BaseUnit PlaceUnitAtTile(int x, int z, Factions fac, UnitTypes unit, UnitCountpanel cardPanel)
+    public BaseUnit PlaceUnitAtTile(int x, int z, FactionsEnum fac, UnitTypesEnum unit, UnitCountpanel cardPanel)
     {
         UnitRegistryEntry entry = unitRegistry.GetEntry(unit, fac);
 

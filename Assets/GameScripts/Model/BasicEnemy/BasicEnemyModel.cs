@@ -4,11 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Assets.GameScripts.Model.Game.Enums
+namespace Assets.GameScripts.Model.BasicEnemy
 {
-    public enum Players
+    public class BasicEnemyModel
     {
-        White,
-        Black
+
     }
 }

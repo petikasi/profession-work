@@ -10,16 +10,16 @@ namespace Assets.GameScripts.ViewModel.CameraAndGrapichs.Grapic
     [System.Serializable]
     public class FactionSprites
     {
-        private readonly Factions faction;
+        private readonly FactionsEnum faction;
         private readonly Sprite sprite;
-        public FactionSprites(Factions faction, Sprite sprite)
+        public FactionSprites(FactionsEnum faction, Sprite sprite)
         {
             this.faction = faction;
             this.sprite = sprite;
 
         }
 
-        public bool ByFaction(Factions faction)
+        public bool ByFaction(FactionsEnum faction)
         {
             if (this.faction == faction)
             {

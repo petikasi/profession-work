@@ -16,8 +16,8 @@ namespace Assets.GameScripts.Model.Game.GameController
         public Deck SelectedDeck { get; private set; }
         public static DeckManagerController Instance { get; private set; }
 
-        public event Action RefreshDecklist;
-        public event Action Selecteddeck;
+        public event Action OnRefreshDecklist;
+        public event Action OnSelectedDeck;
 
         void Awake()
         {
@@ -39,7 +39,7 @@ namespace Assets.GameScripts.Model.Game.GameController
             if (!DeckList.decks.Contains(d))
             {
                 DeckList.decks.Add(d);
-                RefreshDecklist?.Invoke();
+                OnRefreshDecklist?.Invoke();
             }
 
         }
@@ -50,14 +50,14 @@ namespace Assets.GameScripts.Model.Game.GameController
             {
                 DeckList.decks.Remove(SelectedDeck);
                 DeckRemoving.DeleteDeck(SelectedDeck.ID);
-                RefreshDecklist?.Invoke();
+                OnRefreshDecklist?.Invoke();
             }
         }
 
         public void Choosendeck(Deck d) 
         {
             SelectedDeck = d;
-            Selecteddeck?.Invoke();
+            OnSelectedDeck?.Invoke();
         }
         public void AddSelectedDeckToDeckBuilder() 
         {

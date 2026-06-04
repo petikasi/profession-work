@@ -3,7 +3,6 @@ using Assets.GameScripts.ViewModel.CameraAndGrapichs.Grapic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using System.Linq;
 using UnityEngine.EventSystems;
 
 namespace Assets.GameScripts.ViewModel.Game.UnitHolder
@@ -16,15 +15,15 @@ namespace Assets.GameScripts.ViewModel.Game.UnitHolder
         [SerializeField] private Image unitImage;
         [SerializeField] private TMP_Text unitCountText;
 
-        private UnitTypes myType;
-        private Factions myFaction;
+        private UnitTypesEnum myType;
+        private FactionsEnum myFaction;
         private int currentCount;
         private bool zeroFromUnit= false;
 
         /// <summary>
         /// Ezt a függvényt hívja meg a UnitCanvas, amikor létrehozza a panelt.
         /// </summary>
-        public void Initiate(UnitTypes type, Factions faction, int currentCount)
+        public void Initiate(UnitTypesEnum type, FactionsEnum faction, int currentCount)
         {
             myType = type;
             myFaction = faction;

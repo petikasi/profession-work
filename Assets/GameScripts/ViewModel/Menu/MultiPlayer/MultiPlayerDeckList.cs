@@ -24,14 +24,14 @@ namespace Assets.GameScripts.ViewModel.MutliPlayer
         {
             base.OnEnable();
 
-            DeckManagerController.Instance.RefreshDecklist += base.CreatePage;
+            DeckManagerController.Instance.OnRefreshDecklist += base.CreatePage;
         }
 
         protected override void OnDisable()
         {
             base.OnDisable();
 
-            DeckManagerController.Instance.RefreshDecklist -= base.CreatePage;
+            DeckManagerController.Instance.OnRefreshDecklist -= base.CreatePage;
 
         }
 

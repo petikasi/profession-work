@@ -1,4 +1,5 @@
 using Assets.GameScripts.ViewModel.Game.UnitHolder;
+using Assets.GameScripts.Model.Game.Enums;
 using UnityEngine;
 
 
@@ -14,9 +15,9 @@ using UnityEngine;
 
         public int Initiate { get; protected set; }
         public UnitCountpanel MyCardPanel { get; set; }
-        public Factions Faction { get; set; }
-        public Player Player { get; set; }
-        public UnitTypes UnitType { get; set; }
+        public FactionsEnum Faction { get; set; }
+        public PlayerEnum Player { get; set; }
+        public UnitTypesEnum UnitType { get; set; }
         public int TileX { get; set; }
         public int TileZ { get; set; }
 

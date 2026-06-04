@@ -38,10 +38,10 @@ namespace Assets.GameScripts.ViewModel.Game.UnitHolder
                 return;
             }
 
-            List<UnitTypes> unitsInDeck = selectedDeck.GetHoleListUnit();
-            Factions currentFaction = selectedDeck.FactionsGet;
+            List<UnitTypesEnum> unitsInDeck = selectedDeck.GetHoleListUnit();
+            FactionsEnum currentFaction = selectedDeck.FactionsGet;
 
-            foreach (UnitTypes unitType in Enum.GetValues(typeof(UnitTypes)))
+            foreach (UnitTypesEnum unitType in Enum.GetValues(typeof(UnitTypesEnum)))
             {
 
                 // Megkérdezzük a paklitól, hogy ebbõl a típusból összesen hány darab van

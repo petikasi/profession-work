@@ -40,7 +40,7 @@ namespace Assets.GameScripts.ViewModel.CameraAndGrapichs.Grapic
         private void AddFactionSpritesToList()
         {
 
-            foreach (Factions fac in Enum.GetValues(typeof(Factions)))
+            foreach (FactionsEnum fac in Enum.GetValues(typeof(FactionsEnum)))
             {
 
                 string key = $"FactionPictures/{fac}";
@@ -61,10 +61,10 @@ namespace Assets.GameScripts.ViewModel.CameraAndGrapichs.Grapic
         private void AddUnitSpritesToList()
         {
 
-            foreach (Factions fac in Enum.GetValues(typeof(Factions)))
+            foreach (FactionsEnum fac in Enum.GetValues(typeof(FactionsEnum)))
             {
 
-                foreach (UnitTypes unitType in Enum.GetValues(typeof(UnitTypes)))
+                foreach (UnitTypesEnum unitType in Enum.GetValues(typeof(UnitTypesEnum)))
                 {
                     string key = $"UnitPictures/{fac}/{unitType}"; ;
                     Sprite sprite = Resources.Load<Sprite>(key);

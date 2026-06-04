@@ -11,10 +11,10 @@ public class Deck
 
     #region variables
     [SerializeField] private string id;
-    [SerializeField] private Factions faction = Factions.Human;
+    [SerializeField] private FactionsEnum faction = FactionsEnum.Human;
     [SerializeField] private int Money = 100000;
     [SerializeField] private string name;
-    [SerializeField] private List<UnitTypes> starterDeck = new();
+    [SerializeField] private List<UnitTypesEnum> starterDeck = new();
 
     public string NAME
     {
@@ -22,7 +22,6 @@ public class Deck
         set => name = value;
 
     }
-    public event Action<int> OnMoneyChanged;
     #endregion
 
 
@@ -30,9 +29,9 @@ public class Deck
     public int Count => starterDeck.Count;
     public string ID => id;
 
-    public Factions FactionsGet => faction;    
-    public List<UnitTypes> GetHoleListUnit() => starterDeck;
-    public Deck (List<UnitTypes> units, Factions faction)
+    public FactionsEnum FactionsGet => faction;    
+    public List<UnitTypesEnum> GetHoleListUnit() => starterDeck;
+    public Deck (List<UnitTypesEnum> units, FactionsEnum faction)
     {
         this.starterDeck = units;
         this.faction=faction;
@@ -41,29 +40,29 @@ public class Deck
     }
     public Deck()
     {
-        this.starterDeck = new List<UnitTypes>();
-        this.faction = Factions.Human;
+        this.starterDeck = new List<UnitTypesEnum>();
+        this.faction = FactionsEnum.Human;
         this.id = Guid.NewGuid().ToString();
         name = "";
     }
 
     public int GETMONEY => Money;
-    public int GetPreisofUnit( UnitTypes unit) 
+    public int GetPreisofUnit( UnitTypesEnum unit) 
     {
 
         switch (unit) 
         {
-            case UnitTypes.BasicMelee:
+            case UnitTypesEnum.BasicMelee:
                 return UnitPrices.PRICEOFBASICMELEE;;
-            case UnitTypes.Ranged:
+            case UnitTypesEnum.Ranged:
                 return UnitPrices.PRICEOFRANGED;
-            case UnitTypes.AdvancedMelee:
+            case UnitTypesEnum.AdvancedMelee:
                 return UnitPrices.PRICEOFADVANCEDMELEE;
-            case UnitTypes.Wizard:
+            case UnitTypesEnum.Wizard:
                 return UnitPrices.PRICEOFWIZARD;
-            case UnitTypes.Artillery:
+            case UnitTypesEnum.Artillery:
                 return UnitPrices.PRICEOFARTILLERY;
-            case UnitTypes.Special:
+            case UnitTypesEnum.Special:
                 return UnitPrices.PRICEOFSECIAL;
         }
 
@@ -71,11 +70,11 @@ public class Deck
 
 
     }
-    public int GetCountUnit(UnitTypes unit)
+    public int GetCountUnit(UnitTypesEnum unit)
     {
         int count = 0;
 
-        foreach (UnitTypes u in starterDeck)
+        foreach (UnitTypesEnum u in starterDeck)
         {
 
             if (u == unit)
@@ -91,7 +90,7 @@ public class Deck
 
     #region Add&RemoveUnits
 
-    public void Add( UnitTypes unit) 
+    public void Add( UnitTypesEnum unit) 
     {
 
             Money -= GetPreisofUnit(unit);
@@ -100,7 +99,7 @@ public class Deck
 
         
     }
-    public void Remove(UnitTypes unit)
+    public void Remove(UnitTypesEnum unit)
     {
 
             starterDeck.Remove(unit);
@@ -112,14 +111,14 @@ public class Deck
     #endregion
 
     #region Setters
-    public int  GetCountofUnits(UnitTypes predicate)
+    public int  GetCountofUnits(UnitTypesEnum predicate)
     {
        return  starterDeck.Where(unit => unit == predicate).ToList().Count;
     }
     #endregion
 
     #region ChangeFaction
-    public void ChangeFaction(Factions newFaction)
+    public void ChangeFaction(FactionsEnum newFaction)
     {
         faction = newFaction;
         Debug.Log(newFaction+" in Model");

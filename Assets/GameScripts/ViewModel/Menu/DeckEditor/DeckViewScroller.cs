@@ -26,8 +26,8 @@ namespace Assets.GameScripts.ViewModel.DeckEditor
         {
             base.OnEnable();
             
-            DeckManagerController.Instance.RefreshDecklist += base.CreatePage;
-            DeckManagerController.Instance.Selecteddeck += ShowModifyAndRenameButton;
+            DeckManagerController.Instance.OnRefreshDecklist += base.CreatePage;
+            DeckManagerController.Instance.OnSelectedDeck += ShowModifyAndRenameButton;
 
             HideModifyAndRenameButton();
         }
@@ -36,8 +36,8 @@ namespace Assets.GameScripts.ViewModel.DeckEditor
         {
             base.OnDisable();
 
-            DeckManagerController.Instance.RefreshDecklist -= base.CreatePage;
-            DeckManagerController.Instance.Selecteddeck -= ShowModifyAndRenameButton;
+            DeckManagerController.Instance.OnRefreshDecklist -= base.CreatePage;
+            DeckManagerController.Instance.OnSelectedDeck -= ShowModifyAndRenameButton;
 
             HideModifyAndRenameButton();
 

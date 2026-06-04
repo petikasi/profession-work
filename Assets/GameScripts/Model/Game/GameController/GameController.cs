@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Assets.GameScripts.Model.Game.Enums;
 using Assets.GameScripts.Model.Game.GameController;
+using Assets.GameScripts.Model.Game.Player;
 using Assets.GameScripts.ViewModel.Game.UnitHolder;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -11,11 +13,13 @@ public class GameController : MonoBehaviour
 
 
     public static GameController Instance { get; private set; }
-
-    private List<BaseUnit> units = new();
-    public (UnitTypes Unit, Factions Faction) UnitandFaction { get;  private set; }
+    public (UnitTypesEnum Unit, FactionsEnum Faction) UnitandFaction { get;  private set; }
+    public PlayerModel Players { get; private set; }
     private bool hasSelectedUnit = false;
     private UnitCountpanel selectedCardScript;
+    private List<BaseUnit> units = new();
+    public event Action OnEveryUnitPlaced;
+    int unitCount;
 
 
     private void Awake()
@@ -27,9 +31,19 @@ public class GameController : MonoBehaviour
         }
 
         Instance = this;
+        Players = new PlayerModel(PlayerEnum.White,DeckManagerController.Instance.SelectedDeck);
+        if (DeckManagerController.Instance.SelectedDeck != null)
+        {
+             unitCount = DeckManagerController.Instance.SelectedDeck.Count;
+            Debug.Log($"A kiválasztott pakliban lévõ egységek száma: {unitCount}");
+        }
+        else
+        {
+            Debug.LogWarning("Még nincs kiválasztva semmilyen pakli!");
+        }
     }
 
-    public void UnitandFactionSet(UnitTypes unit, Factions fac, UnitCountpanel cardScript)
+    public void UnitandFactionSet(UnitTypesEnum unit, FactionsEnum fac, UnitCountpanel cardScript)
     {
         UnitandFaction = (unit, fac);
 
@@ -40,14 +54,12 @@ public class GameController : MonoBehaviour
     }
     public void CallPlacing(int x, int z, bool isRightClick = false)
     {
-        // 1. HA JOBB KLIKK TÖRTÉNT -> AZONNALI VISSZAVÉTEL
         if (isRightClick)
         {
             TryRemoveUnitAt(x, z);
-            return; // Itt megállunk, nem futunk neki a lerakásnak
+            return;
         }
 
-        // 2. HA BAL KLIKK TÖRTÉNT (és van kijelölt egység) -> LERAKÁS
         if (hasSelectedUnit)
         {
             HandlePlacing(x, z);
@@ -81,6 +93,13 @@ public class GameController : MonoBehaviour
                 units.Add(unit);
                 selectedCardScript.DecreaseCount();
                 ClearSelection();
+                unitCount--;
+                Debug.Log(unitCount);
+                if (unitCount==0) 
+                {
+
+                    OnEveryUnitPlaced.Invoke();
+                }
             }
         }
     }
@@ -96,6 +115,7 @@ public class GameController : MonoBehaviour
             if (unitToRemove.MyCardPanel != null)
             {
                 unitToRemove.MyCardPanel.IncreaseCount(); // Ezt a metódust mindjárt hozzáadjuk a kártyához!
+                unitCount++;
             }
 
             // 2. Töröljük a belsõ listánkból

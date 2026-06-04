@@ -8,41 +8,41 @@ namespace Assets.GameScripts.Model.Units
 {
     public  class UnitNames
     {
-        private static readonly  Dictionary<(Factions, UnitTypes), string> names =
+        private static readonly  Dictionary<(FactionsEnum, UnitTypesEnum), string> names =
             new()
         {
             //Humans
-            { (Factions.Human, UnitTypes.BasicMelee), "Sworn-Brother" },
-            { (Factions.Human, UnitTypes.Ranged), "Vigil-Archer" },
-            { (Factions.Human, UnitTypes.AdvancedMelee), "Justiciar" },
-            { (Factions.Human, UnitTypes.Wizard), "Fate Weaver" },
-            { (Factions.Human, UnitTypes.Artillery), "Cataclysm Cannon" },
-            { (Factions.Human, UnitTypes.Special), "Archangel of Penance" },
+            { (FactionsEnum.Human, UnitTypesEnum.BasicMelee), "Sworn-Brother" },
+            { (FactionsEnum.Human, UnitTypesEnum.Ranged), "Vigil-Archer" },
+            { (FactionsEnum.Human, UnitTypesEnum.AdvancedMelee), "Justiciar" },
+            { (FactionsEnum.Human, UnitTypesEnum.Wizard), "Fate Weaver" },
+            { (FactionsEnum.Human, UnitTypesEnum.Artillery), "Cataclysm Cannon" },
+            { (FactionsEnum.Human, UnitTypesEnum.Special), "Archangel of Penance" },
             //Orks
-            { (Factions.Orks, UnitTypes.BasicMelee), "Da Boyz" },
-            { (Factions.Orks, UnitTypes.Ranged), "Spite-Flinger" },
-            { (Factions.Orks, UnitTypes.AdvancedMelee), "Iron-Crusher" },
-            { (Factions.Orks, UnitTypes.Wizard), "Boneseer" },
-            { (Factions.Orks, UnitTypes.Artillery), "Skull Lobber" },
-            { (Factions.Orks, UnitTypes.Special), "The Bloodaxe" },
+            { (FactionsEnum.Orks, UnitTypesEnum.BasicMelee), "Da Boyz" },
+            { (FactionsEnum.Orks, UnitTypesEnum.Ranged), "Spite-Flinger" },
+            { (FactionsEnum.Orks, UnitTypesEnum.AdvancedMelee), "Iron-Crusher" },
+            { (FactionsEnum.Orks, UnitTypesEnum.Wizard), "Boneseer" },
+            { (FactionsEnum.Orks, UnitTypesEnum.Artillery), "Skull Lobber" },
+            { (FactionsEnum.Orks, UnitTypesEnum.Special), "The Bloodaxe" },
             //Elves
-             { (Factions.Elven, UnitTypes.BasicMelee), "Sentinel" },
-            { (Factions.Elven, UnitTypes.Ranged), "Long-Watcher" },
-            { (Factions.Elven, UnitTypes.AdvancedMelee), "Oathtaker" },
-            { (Factions.Elven, UnitTypes.Wizard), "Archon of Echoes" },
-            { (Factions.Elven, UnitTypes.Artillery), "Gaze of the Ancients" },
-            { (Factions.Elven, UnitTypes.Special), "The Pale Revenant" },
+             { (FactionsEnum.Elven, UnitTypesEnum.BasicMelee), "Sentinel" },
+            { (FactionsEnum.Elven, UnitTypesEnum.Ranged), "Long-Watcher" },
+            { (FactionsEnum.Elven, UnitTypesEnum.AdvancedMelee), "Oathtaker" },
+            { (FactionsEnum.Elven, UnitTypesEnum.Wizard), "Archon of Echoes" },
+            { (FactionsEnum.Elven, UnitTypesEnum.Artillery), "Gaze of the Ancients" },
+            { (FactionsEnum.Elven, UnitTypesEnum.Special), "The Pale Revenant" },
             //Hell
-             { (Factions.Hell, UnitTypes.BasicMelee), "Dread-Claw" },
-            { (Factions.Hell, UnitTypes.Ranged), "Void-Stalker" },
-            { (Factions.Hell, UnitTypes.AdvancedMelee), "Hell-Knight" },
-            { (Factions.Hell, UnitTypes.Wizard), "Calamity-Weaver" },
-            { (Factions.Hell, UnitTypes.Artillery), "Soul-Mortar" },
-            { (Factions.Hell, UnitTypes.Special), "Seraph of the Void" }
+             { (FactionsEnum.Hell, UnitTypesEnum.BasicMelee), "Dread-Claw" },
+            { (FactionsEnum.Hell, UnitTypesEnum.Ranged), "Void-Stalker" },
+            { (FactionsEnum.Hell, UnitTypesEnum.AdvancedMelee), "Hell-Knight" },
+            { (FactionsEnum.Hell, UnitTypesEnum.Wizard), "Calamity-Weaver" },
+            { (FactionsEnum.Hell, UnitTypesEnum.Artillery), "Soul-Mortar" },
+            { (FactionsEnum.Hell, UnitTypesEnum.Special), "Seraph of the Void" }
         };
 
 
-        public static string GetNameForUnit(Factions faction, UnitTypes unittype) 
+        public static string GetNameForUnit(FactionsEnum faction, UnitTypesEnum unittype) 
         {
             string unitname = "";
             try

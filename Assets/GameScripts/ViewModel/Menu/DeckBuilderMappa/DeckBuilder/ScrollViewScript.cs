@@ -39,7 +39,7 @@ namespace Assets.GameScripts.ViewModel.DeckBuilderMappa.DeckBuilder
         private void LoadUnitsView()
         {
             Clear();
-            foreach (UnitTypes unitType in Enum.GetValues(typeof(UnitTypes)))
+            foreach (UnitTypesEnum unitType in Enum.GetValues(typeof(UnitTypesEnum)))
             {
                 string name = UnitNames.GetNameForUnit(DeckBuilderController.Instance.DeckInBuilding.FactionsGet, unitType);
                 GameObject unitpanelGO = Instantiate(UnitPanelPref, UnitPanelParent);

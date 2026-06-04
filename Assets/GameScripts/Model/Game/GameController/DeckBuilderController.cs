@@ -21,7 +21,7 @@ public class DeckBuilderController : MonoBehaviour
         Instance = this;
     }
 
-    public void ChangeFaction(Factions f)
+    public void ChangeFaction(FactionsEnum f)
     {
         Debug.Log(f.ToString());
         DeckInBuilding.ChangeFaction(f);
@@ -55,7 +55,7 @@ public class DeckBuilderController : MonoBehaviour
 
     }
 
-    public void Add(UnitTypes unit)
+    public void Add(UnitTypesEnum unit)
     {
         if (DeckInBuilding.GETMONEY >= DeckInBuilding.GetPreisofUnit(unit))
         {
@@ -64,7 +64,7 @@ public class DeckBuilderController : MonoBehaviour
         }
 
     }
-    public void Remove(UnitTypes unit)
+    public void Remove(UnitTypesEnum unit)
     {
         if (DeckInBuilding.GetHoleListUnit().Contains(unit))
         {

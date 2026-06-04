@@ -24,14 +24,14 @@ namespace Assets.GameScripts.ViewModel.SinglePlayer
         protected override void OnEnable()
         {
             base.OnEnable();
-            DeckManagerController.Instance.Selecteddeck += ShowPlayAndRenameButton;
+            DeckManagerController.Instance.OnSelectedDeck += ShowPlayAndRenameButton;
             HidePlayAndRenameButton();
         }
 
         protected override void OnDisable()
         {
             base.OnDisable();
-            DeckManagerController.Instance.Selecteddeck += ShowPlayAndRenameButton;
+            DeckManagerController.Instance.OnSelectedDeck += ShowPlayAndRenameButton;
         }
 
         protected override List<Deck> GetItems()

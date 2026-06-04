@@ -7,10 +7,10 @@ namespace Assets.GameScripts.ViewModel.CameraAndGrapichs.Grapic
     [System.Serializable]
     public class UnitSprite
     {
-        private readonly Factions faction;
-        private readonly UnitTypes unit;
+        private readonly FactionsEnum faction;
+        private readonly UnitTypesEnum unit;
         private readonly Sprite sprite;
-        public UnitSprite(Factions faction, UnitTypes unit, Sprite sprite)
+        public UnitSprite(FactionsEnum faction, UnitTypesEnum unit, Sprite sprite)
         {
             this.faction = faction;
             this.unit = unit;
@@ -18,7 +18,7 @@ namespace Assets.GameScripts.ViewModel.CameraAndGrapichs.Grapic
 
         }
 
-        public bool ByUnitAndFaction(Factions faction, UnitTypes unit)
+        public bool ByUnitAndFaction(FactionsEnum faction, UnitTypesEnum unit)
         {
             if (this.faction == faction && this.unit == unit)
             {

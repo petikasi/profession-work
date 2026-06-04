@@ -8,7 +8,7 @@ namespace Assets.GameScripts.ViewModel.DeckBuilderMappa.DeckBuilder
 {
     public class FactionDropDown : MonoBehaviour
     {
-        [SerializeField] string[] UnitPanelPrefParent;//possible options
+        [SerializeField] string[] UnitPanelPrefParent;
         [SerializeField] TMP_Dropdown dropdown;
         void Start()
         {
@@ -19,7 +19,7 @@ namespace Assets.GameScripts.ViewModel.DeckBuilderMappa.DeckBuilder
         {
 
 
-            foreach (Factions faction in Enum.GetValues(typeof(Factions)))
+            foreach (FactionsEnum faction in Enum.GetValues(typeof(FactionsEnum)))
             {
                 dropdown.options.Add(new TMP_Dropdown.OptionData(faction.ToString()));
             }
@@ -29,7 +29,7 @@ namespace Assets.GameScripts.ViewModel.DeckBuilderMappa.DeckBuilder
 
         public void GetDropDownValue()
         {
-            Factions selectedFaction = (Factions)dropdown.value;
+            FactionsEnum selectedFaction = (FactionsEnum)dropdown.value;
             Debug.Log(selectedFaction + " in view");
             DeckBuilderController.Instance.ChangeFaction(selectedFaction);
 
