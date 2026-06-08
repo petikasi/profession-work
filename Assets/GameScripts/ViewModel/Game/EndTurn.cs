@@ -36,6 +36,8 @@ namespace Assets.GameScripts.ViewModel.Game
         public void FirstClick()
         {
             Text buttonText = EndTurnButton.GetComponentInChildren<Text>();
+            Debug.Log(buttonText);
+            Debug.Log("End Turn!");
             if (buttonText != null)
             {
                 buttonText.text = "End Turn!";
