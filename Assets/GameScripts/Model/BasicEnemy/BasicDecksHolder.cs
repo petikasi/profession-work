@@ -8,9 +8,7 @@ namespace Assets.GameScripts.Model.BasicEnemy
 {
     public class BasicDecksHolder
     {
-        private static readonly Dictionary<(FactionsEnum, UnitTypesEnum), string> names =
-        new()
-  {
+
           // 1. Pakli: Kiegyensúlyozott menetelő sereg (16 egység)
     public static readonly List<(FactionsEnum Faction, UnitTypesEnum UnitType)> HumanBalancedDeck = new()
     {
