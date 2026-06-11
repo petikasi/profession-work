@@ -1,26 +1,38 @@
 using UnityEngine;
 using Assets.GameScripts.Model.Game.Enums;
+using Assets.GameScripts.Model.Game.Player;
 
 public class TurnModel
 {
-    private int _num;
-    private PlayerEnum _activePlayer;
+    private int _num=0;
+    private PlayerModel _activePlayer;
+    private bool gamestarted=false;
 
-    public int Num
+    public int GetNum
     {
         get => _num;
-        set => _num = value;
+    }
+    public bool Getgamestarted
+    {
+        get => gamestarted;
     }
 
-    public PlayerEnum ActivePlayer
-    {
-        get => _activePlayer;
-        set => _activePlayer = value;
-    }
 
-    public TurnModel(int startTurnNum, PlayerEnum startingPlayer)
+
+    public TurnModel(PlayerModel startingPlayer)
     {
-        _num = startTurnNum;
         _activePlayer = startingPlayer;
+    }
+
+    public void SetActivePayer(PlayerModel model) 
+    {
+
+        _activePlayer = model;
+        _num++;
+    }
+
+    public void SetGameStarted()
+    {
+        gamestarted = true;
     }
 }

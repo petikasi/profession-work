@@ -1,13 +1,7 @@
-
-using System.Collections.Generic;
-using System.Linq;
 using Assets.GameScripts.Model.Game.Board;
-using Assets.GameScripts.Model.Game.GameController;
+using Assets.GameScripts.Model.Game.GameControllerFolder;
 using Assets.GameScripts.ViewModel.Game.UnitHolder;
-using NUnit.Framework;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.TestTools;
 
 public class BoardLayout : MonoBehaviour
 {

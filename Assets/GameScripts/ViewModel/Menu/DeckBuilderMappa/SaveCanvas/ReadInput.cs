@@ -1,5 +1,4 @@
- using System;
-using Unity.VisualScripting;
+using Assets.GameScripts.Model.Game.GameControllerFolder;
 using UnityEngine;
 
 namespace Assets.GameScripts.ViewModel.DeckBuilderMappa.SaveCanvas

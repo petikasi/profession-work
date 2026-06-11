@@ -1,5 +1,5 @@
 using System;
-using Assets.GameScripts.Model.Game.GameController;
+using Assets.GameScripts.Model.Game.GameControllerFolder;
 using Assets.GameScripts.ViewModel.DeckEditor;
 using TMPro;
 using UnityEngine;

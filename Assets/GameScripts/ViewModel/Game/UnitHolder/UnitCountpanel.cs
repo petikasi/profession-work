@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using Assets.GameScripts.ViewModel.CameraAndGrapichs.Grapic;
+using Assets.GameScripts.Model.Game.GameControllerFolder;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;

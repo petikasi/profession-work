@@ -1,4 +1,4 @@
-using Assets.GameScripts.Model.Game.GameController;
+using Assets.GameScripts.Model.Game.GameControllerFolder;
 using UnityEngine;
 using System.Collections.Generic;
 using System;

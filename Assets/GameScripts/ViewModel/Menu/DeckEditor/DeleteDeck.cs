@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Assets.GameScripts.Model.Deckmaker.Deks;
-using Assets.GameScripts.Model.Game.GameController;
-using GameScripts.Model.Units;
-using NUnit.Framework;
-using TMPro;
+﻿using Assets.GameScripts.Model.Game.GameControllerFolder;
 using UnityEngine;
 using UnityEngine.UI;
 

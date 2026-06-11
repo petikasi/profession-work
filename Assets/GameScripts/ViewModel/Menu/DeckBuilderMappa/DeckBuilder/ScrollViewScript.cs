@@ -2,13 +2,8 @@ using System;
 using System.Collections.Generic;
 using Assets.GameScripts.Model.Units;
 using Assets.GameScripts.ViewModel.CameraAndGrapichs.Grapic;
-using Mono.Cecil.Cil;
-using TMPro;
-using UnityEditor;
 using UnityEngine;
-using UnityEngine.AddressableAssets;
-using UnityEngine.UI;
-using static UnityEngine.InputSystem.LowLevel.InputStateHistory;
+using Assets.GameScripts.Model.Game.GameControllerFolder;
 
 namespace Assets.GameScripts.ViewModel.DeckBuilderMappa.DeckBuilder
 {

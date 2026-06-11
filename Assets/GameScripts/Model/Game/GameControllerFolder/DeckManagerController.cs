@@ -8,7 +8,7 @@ using UnityEngine;
 using GameScripts.Persistence;
 using Assets.GameScripts.Persistence.RemoveDeck;
 
-namespace Assets.GameScripts.Model.Game.GameController
+namespace Assets.GameScripts.Model.Game.GameControllerFolder
 {
     public class DeckManagerController : MonoBehaviour
     {

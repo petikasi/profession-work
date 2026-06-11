@@ -1,8 +1,7 @@
 using System;
 using UnityEngine;
-using UnityEngine.UI;
 using TMPro;
-using JetBrains.Annotations;
+using Assets.GameScripts.Model.Game.GameControllerFolder;
 
 namespace Assets.GameScripts.ViewModel.DeckBuilderMappa.DeckBuilder
 {

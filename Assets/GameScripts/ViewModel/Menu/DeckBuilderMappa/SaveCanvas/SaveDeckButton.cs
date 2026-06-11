@@ -1,3 +1,4 @@
+using Assets.GameScripts.Model.Game.GameControllerFolder;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -9,7 +10,6 @@ namespace Assets.GameScripts.ViewModel.DeckBuilderMappa.SaveCanvas {
 
         private void Start()
         {
-
 
             saveButtonObj.onClick.RemoveAllListeners();
             saveButtonObj.onClick.AddListener(()

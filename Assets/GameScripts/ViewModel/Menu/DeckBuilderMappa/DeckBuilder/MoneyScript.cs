@@ -1,5 +1,6 @@
 using TMPro;
 using UnityEngine;
+using Assets.GameScripts.Model.Game.GameControllerFolder;
 
 namespace Assets.GameScripts.ViewModel.DeckBuilderMappa.DeckBuilder { 
     public class MoneyScript : MonoBehaviour

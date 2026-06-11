@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using Assets.GameScripts.Model.Game.GameControllerFolder;
 
 namespace Assets.GameScripts.ViewModel.DeckBuilderMappa.DeckBuilder
 {
