@@ -29,7 +29,7 @@ namespace Assets.GameScripts.ViewModel.DeckEditor
         public void OnPointerClick(PointerEventData eventData)
         {
             Debug.Log("Selected Deck: " + currentDeck.NAME);
-            DeckManagerController.Instance.Choosendeck(currentDeck);
+            DeckLoaderController.Instance.Choosendeck(currentDeck);
         }
     }
 }

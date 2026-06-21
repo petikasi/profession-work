@@ -26,8 +26,8 @@ namespace Assets.GameScripts.ViewModel.DeckEditor
         {
             base.OnEnable();
             
-            DeckManagerController.Instance.OnRefreshDecklist += base.CreatePage;
-            DeckManagerController.Instance.OnSelectedDeck += ShowModifyAndRenameButton;
+            DeckLoaderController.Instance.OnRefreshDecklist += base.CreatePage;
+            DeckLoaderController.Instance.OnSelectedDeck += ShowModifyAndRenameButton;
 
             HideModifyAndRenameButton();
         }
@@ -36,8 +36,8 @@ namespace Assets.GameScripts.ViewModel.DeckEditor
         {
             base.OnDisable();
 
-            DeckManagerController.Instance.OnRefreshDecklist -= base.CreatePage;
-            DeckManagerController.Instance.OnSelectedDeck -= ShowModifyAndRenameButton;
+            DeckLoaderController.Instance.OnRefreshDecklist -= base.CreatePage;
+            DeckLoaderController.Instance.OnSelectedDeck -= ShowModifyAndRenameButton;
 
             HideModifyAndRenameButton();
 
@@ -45,7 +45,7 @@ namespace Assets.GameScripts.ViewModel.DeckEditor
 
         protected override List<Deck> GetItems()
         {
-            return DeckManagerController.Instance.DeckList.decks;
+            return DeckLoaderController.Instance.DeckList.decks;
         }
 
         protected override void SetupItem(GameObject obj, Deck deck)

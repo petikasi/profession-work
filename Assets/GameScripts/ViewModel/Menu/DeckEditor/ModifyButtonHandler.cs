@@ -15,10 +15,10 @@ namespace Assets.GameScripts.ViewModel.DeckEditor
             ModifyButton.onClick.RemoveAllListeners();
             ModifyButton.onClick.AddListener(()
                 => {
-                    if (DeckManagerController.Instance.SelectedDeck != null)
+                    if (DeckLoaderController.Instance.SelectedDeck != null)
                     {
                         Debug.Log("Modification started");
-                        DeckManagerController.Instance.AddSelectedDeckToDeckBuilder();
+                        DeckLoaderController.Instance.AddSelectedDeckToDeckBuilder();
                     }
 
                 }

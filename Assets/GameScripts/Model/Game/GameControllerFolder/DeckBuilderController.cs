@@ -40,16 +40,16 @@ namespace Assets.GameScripts.Model.Game.GameControllerFolder
         public void InitializeSave()
         {
             Debug.Log($"Begin Saving as {DeckInBuilding.NAME}");
-            if (DeckManagerController.Instance.DeckList.SearchByID(DeckInBuilding.ID))
+            if (DeckLoaderController.Instance.DeckList.SearchByID(DeckInBuilding.ID))
             {
-                DeckManagerController.Instance.DeckList.ReplaceDeckWithModifiedDack(DeckInBuilding);
-                DeckSaving.SaveDeckList(DeckManagerController.Instance.DeckList);
+                DeckLoaderController.Instance.DeckList.ReplaceDeckWithModifiedDack(DeckInBuilding);
+                DeckSaving.SaveDeckList(DeckLoaderController.Instance.DeckList);
 
             }
             else
             {
                 DeckSaving.SaveDeck(DeckInBuilding);
-                DeckManagerController.Instance.AddDeckToDeckList(DeckInBuilding);
+                DeckLoaderController.Instance.AddDeckToDeckList(DeckInBuilding);
 
             }
             DeckInBuilding = new();

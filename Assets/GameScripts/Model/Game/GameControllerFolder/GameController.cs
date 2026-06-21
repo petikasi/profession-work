@@ -39,8 +39,8 @@ namespace Assets.GameScripts.Model.Game.GameControllerFolder
             }
 
             Instance = this;
-            OwnPlayer = new PlayerModel(PlayerEnum.White, DeckManagerController.Instance.SelectedDeck);
-            if (DeckManagerController.Instance.SelectedDeck != null)
+            OwnPlayer = new PlayerModel(PlayerEnum.White, DeckLoaderController.Instance.SelectedDeck);
+            if (DeckLoaderController.Instance.SelectedDeck != null)
             {
                 unitCount = OwnPlayer.Deck.Count;
                 Debug.Log($"A kiválasztott pakliban lévõ egységek száma: {unitCount}");

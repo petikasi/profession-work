@@ -30,7 +30,7 @@ namespace Assets.GameScripts.ViewModel.Game.UnitHolder
             unitPanels.Clear();
 
             // 2. Pakli és frakció lekérése
-            var selectedDeck = DeckManagerController.Instance.SelectedDeck;
+            var selectedDeck = DeckLoaderController.Instance.SelectedDeck;
 
             if (selectedDeck == null)
             {

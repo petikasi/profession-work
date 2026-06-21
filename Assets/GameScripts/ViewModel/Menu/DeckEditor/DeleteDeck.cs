@@ -22,9 +22,9 @@ namespace Assets.GameScripts.ViewModel.DeckEditor
         public void InitializeDeletingDeck() 
         {
 
-            if (DeckManagerController.Instance.SelectedDeck != null) 
+            if (DeckLoaderController.Instance.SelectedDeck != null) 
             {
-                DeckManagerController.Instance.RemoveSelectedDeck();
+                DeckLoaderController.Instance.RemoveSelectedDeck();
             }
         
         

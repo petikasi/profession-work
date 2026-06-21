@@ -10,11 +10,11 @@ using Assets.GameScripts.Persistence.RemoveDeck;
 
 namespace Assets.GameScripts.Model.Game.GameControllerFolder
 {
-    public class DeckManagerController : MonoBehaviour
+    public class DeckLoaderController : MonoBehaviour
     {
         public DeckList DeckList { get; private set; }
         public Deck SelectedDeck { get; private set; }
-        public static DeckManagerController Instance { get; private set; }
+        public static DeckLoaderController Instance { get; private set; }
 
         public event Action OnRefreshDecklist;
         public event Action OnSelectedDeck;
