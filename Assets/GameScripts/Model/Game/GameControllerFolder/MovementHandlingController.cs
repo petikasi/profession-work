@@ -7,7 +7,7 @@ namespace Assets.GameScripts.Model.Game.GameControllerFolder
     {
         public static MovementHandlingController Instance { get; private set; }
 
-        private BaseUnit activeMovingUnit = null; // Az éppen kijelölt, pályán lévő egység
+        private BaseUnit activeMovingUnit = null;
 
         TurnModel turn;
 
@@ -25,7 +25,6 @@ namespace Assets.GameScripts.Model.Game.GameControllerFolder
         {
             turn = new TurnModel(GameController.Instance.GetPlayer);
         }
-        /// </summary>
         public bool HandleMovement(int x, int z, bool isRightClick)
         {
  
@@ -34,20 +33,18 @@ namespace Assets.GameScripts.Model.Game.GameControllerFolder
                 return false;
             }
 
-            // Jobb klikkre töröljük a jelenlegi mozgás-kijelölést
             if (isRightClick)
             {
                 if (activeMovingUnit != null)
                 {
                     ClearMovementSelection();
-                    return true; // Elnyeltük a kattintást
+                    return true; 
                 }
-                return false; // Ha nem volt kijelölve semmi, mehet tovább a jobb klikk (pl. törlésre)
+                return false; 
             }
 
             BaseUnit clickedUnit = GameController.Instance.GetUnitAt(x, z);
 
-            // --- 1. FÁZIS: EGYSÉG KIJELÖLÉSE ---
             if (activeMovingUnit == null)
             {
                 if (clickedUnit != null)
