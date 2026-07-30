@@ -34,7 +34,8 @@ namespace Assets.GameScripts.Model.Game.GameControllerFolder
         {
             DeckInBuilding = deck;
             OnFactionChanged?.Invoke();
-            OnMoneyChanged.Invoke(DeckInBuilding.GETMONEY);
+            Debug.Log($"Money: {DeckInBuilding.GETMONEY}");
+            OnMoneyChanged?.Invoke(DeckInBuilding.GETMONEY);
         }
 
         public void InitializeSave()

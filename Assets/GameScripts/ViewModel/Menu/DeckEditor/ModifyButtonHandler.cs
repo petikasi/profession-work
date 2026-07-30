@@ -15,6 +15,7 @@ namespace Assets.GameScripts.ViewModel.DeckEditor
             ModifyButton.onClick.RemoveAllListeners();
             ModifyButton.onClick.AddListener(()
                 => {
+                    Debug.Log("Modification started");
                     if (DeckLoaderController.Instance.SelectedDeck != null)
                     {
                         Debug.Log("Modification started");
