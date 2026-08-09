@@ -1,4 +1,4 @@
-using Assets.GameScripts.ViewModel.Game.UnitHolder;
+using Assets.GameScripts.ViewModel.Game.UnitSelectorCanvas;
 using Assets.GameScripts.Model.Game.Enums;
 using UnityEngine;
 

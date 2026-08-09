@@ -4,17 +4,17 @@ using System.Linq;
 using Assets.GameScripts.Model.Game.Enums;
 using Assets.GameScripts.Model.Game.GameControllerFolder;
 using Assets.GameScripts.Model.Game.Player;
-using Assets.GameScripts.ViewModel.Game.UnitHolder;
+using Assets.GameScripts.ViewModel.Game.UnitSelectorCanvas;
 using UnityEngine;
 using UnityEngine.Rendering;
 
 namespace Assets.GameScripts.Model.Game.GameControllerFolder
 {
-    public class GameController : MonoBehaviour
+    public class UserGameController : MonoBehaviour
     {
 
 
-        public static GameController Instance { get; private set; }
+        public static UserGameController Instance { get; private set; }
         public (UnitTypesEnum Unit, FactionsEnum Faction) UnitandFaction { get; private set; }
         public PlayerModel OwnPlayer { get; private set; }
         public PlayerModel EnemyPlayer { get; private set; }
@@ -42,7 +42,7 @@ namespace Assets.GameScripts.Model.Game.GameControllerFolder
             OwnPlayer = new PlayerModel(PlayerEnum.White, DeckLoaderController.Instance.SelectedDeck);
             if (DeckLoaderController.Instance.SelectedDeck != null)
             {
-                unitCount = OwnPlayer.Deck.Count;
+                unitCount = OwnPlayer.SelectedDeck.Count;
                 Debug.Log($"A kiválasztott pakliban lévõ egységek száma: {unitCount}");
             }
             else

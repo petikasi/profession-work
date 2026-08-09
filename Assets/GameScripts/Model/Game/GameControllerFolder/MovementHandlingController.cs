@@ -23,12 +23,12 @@ namespace Assets.GameScripts.Model.Game.GameControllerFolder
         }
         private void Start()
         {
-            turn = new TurnModel(GameController.Instance.GetPlayer);
+            turn = new TurnModel(UserGameController.Instance.GetPlayer);
         }
         public bool HandleMovement(int x, int z, bool isRightClick)
         {
  
-            if (GameController.Instance == null || !turn.Getgamestarted)
+            if (UserGameController.Instance == null || !turn.Getgamestarted)
             {
                 return false;
             }
@@ -43,7 +43,7 @@ namespace Assets.GameScripts.Model.Game.GameControllerFolder
                 return false; 
             }
 
-            BaseUnit clickedUnit = GameController.Instance.GetUnitAt(x, z);
+            BaseUnit clickedUnit = UserGameController.Instance.GetUnitAt(x, z);
 
             if (activeMovingUnit == null)
             {

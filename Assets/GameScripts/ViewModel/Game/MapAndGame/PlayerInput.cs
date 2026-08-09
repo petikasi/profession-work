@@ -49,11 +49,11 @@ namespace Assets.GameScripts.ViewModel.Game.MapAndGame
                     int tileZ = Mathf.FloorToInt(hit.point.z / sizeOfTile);
 
                     Debug.Log($"Kattintott mező: {tileX}, {tileZ} | Jobb klikk: {isRightClick}");
-
-                    if (GameController.Instance != null)
+                    Debug.Log(UserGameController.Instance);
+                    if (UserGameController.Instance != null)
                     {
                         // Továbbítjuk a koordinátákat ÉS azt, hogy jobb klikk volt-e
-                        GameController.Instance.CallPlacing(tileX, tileZ, isRightClick);
+                        UserGameController.Instance.CallPlacing(tileX, tileZ, isRightClick);
                     }
                     else
                     {

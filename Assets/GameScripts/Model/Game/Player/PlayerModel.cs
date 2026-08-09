@@ -6,7 +6,9 @@ namespace Assets.GameScripts.Model.Game.Player
     {
         public  PlayerEnum Player { get; private set; }
         public string  Name { get; private set; }
-        public Deck Deck { get; private set; }
+        public Deck SelectedDeck { get; private set; }
+
+        public GamePhaseEnum CurrentGamePhase{  get; private set; }
 
         public bool IsActive { get; private set; }
         
@@ -14,7 +16,7 @@ namespace Assets.GameScripts.Model.Game.Player
         {
 
             this.Player = player;
-            this.Deck = deck;
+            this.SelectedDeck = deck;
             IsActive = false;
         }
 

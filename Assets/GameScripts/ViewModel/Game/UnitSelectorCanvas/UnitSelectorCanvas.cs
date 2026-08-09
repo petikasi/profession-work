@@ -2,27 +2,38 @@ using Assets.GameScripts.Model.Game.GameControllerFolder;
 using UnityEngine;
 using System.Collections.Generic;
 using System;
+using UnityEngine.UI;
 
-namespace Assets.GameScripts.ViewModel.Game.UnitHolder
+namespace Assets.GameScripts.ViewModel.Game.UnitSelectorCanvas
 {
 
 
-    public class UnitCanvas : MonoBehaviour
+    public class UnitSelectorCanvas : MonoBehaviour
     {
         [SerializeField] private GameObject unitCountPanelPrefab;
         [SerializeField] private Transform unitCountPanelParent;
+        [SerializeField] private Button startButton;
 
-        // Itt tároljuk a legenerált kártyákat
         private List<UnitCountpanel> unitPanels = new();
+        private int allUnitCount;
 
         void Start()
         {
             GenerateUnitSelectionUI();
+            AddEventToStart();
+            UpdateStartButtonState();
+
+
         }
 
         private void GenerateUnitSelectionUI()
         {
-            // 1. UI takarítás az újragenerálás elõtt
+  
+            foreach (var panel in unitPanels)
+            {
+                if (panel != null) panel.OnUnitCountChanged -= HandleUnitCountChanged;
+            }
+
             foreach (Transform child in unitCountPanelParent)
             {
                 Destroy(child.gameObject);
@@ -38,33 +49,29 @@ namespace Assets.GameScripts.ViewModel.Game.UnitHolder
                 return;
             }
 
-            List<UnitTypesEnum> unitsInDeck = selectedDeck.GetHoleListUnit();
+            // Kezdõ egységszám eltárolása
+            allUnitCount = selectedDeck.Count;
+
             FactionsEnum currentFaction = selectedDeck.FactionsGet;
 
             foreach (UnitTypesEnum unitType in Enum.GetValues(typeof(UnitTypesEnum)))
             {
-
-                // Megkérdezzük a paklitól, hogy ebbõl a típusból összesen hány darab van
                 int totalCountOfThisUnit = selectedDeck.GetCountofUnits(unitType);
 
-                // Biztonsági ellenõrzés: ha valamiért mégis 0 vagy negatív lenne, nem gyártunk kártyát
                 if (totalCountOfThisUnit <= 0) continue;
 
                 GameObject newCardObj = Instantiate(unitCountPanelPrefab, unitCountPanelParent);
                 newCardObj.name = $"UnitCard_{currentFaction}_{unitType}";
 
-                UnitCountpanel newPanel = new();
-                if (newPanel == null)
-                {
-                    newPanel = newCardObj.GetComponentInChildren<UnitCountpanel>();
-                }
+                UnitCountpanel newPanel = newCardObj.GetComponent<UnitCountpanel>();
 
                 if (newPanel != null)
                 {
-                    // így a kártyán a teljes mennyiség fog megjelenni!
                     newPanel.Initiate(unitType, currentFaction, totalCountOfThisUnit);
 
-                    // Eltároljuk a listában a kártyát
+                    // Feliratkozunk a panel eseményére!
+                    newPanel.OnUnitCountChanged += HandleUnitCountChanged;
+
                     unitPanels.Add(newPanel);
                 }
                 else
@@ -73,7 +80,68 @@ namespace Assets.GameScripts.ViewModel.Game.UnitHolder
                 }
             }
 
-            Debug.Log($"Sikeresen legenerálva és eltárolva {unitPanels.Count} darab egyedi egységtípus kártya.");
+            Debug.Log($"Sikeresen legenerálva és eltárolva {unitPanels.Count} darab egyedi egységtípus kártya. Összes lehelyezendõ egység: {allUnitCount}");
         }
+
+        /// <summary>
+        /// Ez a függvény fut le minden alkalommal, amikor egy egységet leraknak vagy levesznek a pályáról.
+        /// </summary>
+        private void HandleUnitCountChanged(bool isDecreased)
+        {
+            if (isDecreased)
+            {
+                allUnitCount--; // Egység felkerült a pályára
+            }
+            else
+            {
+                allUnitCount++; // Egységet visszavettek a pályáról
+            }
+
+            Debug.Log($"Még lehelyezésre váró egységek száma: {allUnitCount}");
+
+            UpdateStartButtonState();
+        }
+
+        /// <summary>
+        /// Aktiválja a Start gombot, ha az összes egység felkerült a pályára (allUnitCount == 0).
+        /// </summary>
+        private void UpdateStartButtonState()
+        {
+            if (startButton != null)
+            {
+                if (allUnitCount == 0)
+                {
+                    startButton.gameObject.SetActive(true);
+                }
+                else
+                {
+                    startButton.gameObject.SetActive(false);
+                }
+
+            }
+        }
+
+        private void OnDestroy()
+        {
+            // Biztonsági leiratkozás az objektum megsemmisülésekor
+            foreach (var panel in unitPanels)
+            {
+                if (panel != null) panel.OnUnitCountChanged -= HandleUnitCountChanged;
+            }
+        }
+
+        private void AddEventToStart() 
+        {
+            startButton.onClick.RemoveAllListeners();
+            startButton.onClick.AddListener(()
+                => {
+                    if (startButton != null)
+                    {
+                        
+                    }
+                }
+            );
+        }
+
     }
 }

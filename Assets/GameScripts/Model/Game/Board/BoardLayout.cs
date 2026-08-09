@@ -1,6 +1,6 @@
 using Assets.GameScripts.Model.Game.Board;
 using Assets.GameScripts.Model.Game.GameControllerFolder;
-using Assets.GameScripts.ViewModel.Game.UnitHolder;
+using Assets.GameScripts.ViewModel.Game.UnitSelectorCanvas;
 using UnityEngine;
 
 public class BoardLayout : MonoBehaviour
