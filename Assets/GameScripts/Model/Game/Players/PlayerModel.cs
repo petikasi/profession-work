@@ -8,7 +8,7 @@ namespace Assets.GameScripts.Model.Game.Player
         public string  Name { get; private set; }
         public Deck SelectedDeck { get; private set; }
 
-        public GamePhaseEnum CurrentGamePhase{  get; private set; }
+        public GamePhaseEnum CurrentGamePhase{  get; set; }
 
         public bool IsActive { get; private set; }
         
@@ -19,6 +19,18 @@ namespace Assets.GameScripts.Model.Game.Player
             this.SelectedDeck = deck;
             IsActive = false;
         }
+
+        public PlayerModel(PlayerEnum player, Deck deck, GamePhaseEnum currentgamephase)
+        {
+
+            this.Player = player;
+            this.SelectedDeck = deck;
+            this.CurrentGamePhase = currentgamephase;
+            IsActive = false;
+        }
+
+
+        public bool Isactive => CurrentGamePhase == GamePhaseEnum.Movement;
 
 
     }

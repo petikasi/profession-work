@@ -5,7 +5,6 @@ using UnityEngine;
 
 public class BoardLayout : MonoBehaviour
 {
-
     public static BoardLayout Instance { get; private set; }
 
     [Header("Board Settings")]
@@ -34,13 +33,13 @@ public class BoardLayout : MonoBehaviour
 
     private bool isGenerated = false;
     private UnitRegistry unitRegistry = new();
+    public int PLAYER_ZONE = 4;
 
     void Awake()
     {
         if (Instance != null && Instance != this)
         {
             Destroy(gameObject);
-            
             return;
         }
 
@@ -52,36 +51,15 @@ public class BoardLayout : MonoBehaviour
         if (isGenerated) return;
         isGenerated = true;
 
-        // 1. Padló legenerálása
         GenerateOneBigFloor(widthOfTable, heightOfTable, sizeOfTile);
-
-        // 2. Növényzet szórása
         PopulateEntireMeadow(widthOfTable, heightOfTable, sizeOfTile);
-
-        // 4. Kamera pozicionálása
         FitCameraToMap();
-
-        // 5. Háló kirajzolása 
         GenerateGridLines();
-
-        // 6. Optimalizálás (Batching)
         StaticBatchingUtility.Combine(gameObject);
-
-        //8.Szótár inicializálása
         unitRegistry.InitializeRegistry(prefabs);
-
-        //9.Kijelölni hova lehet tenni az egységeket
         CreateAreaForUnits();
-
-
     }
 
-    /// <summary>
-    /// Létrehoz a pályát(1 nagy gameobjectként kezeljük).
-    /// </summary>
-    ///    /// <param name="tileCountX">A pálya szélessége (hány db egység széles a pálya) </param>
-    /// <param name="tileCountZ">A pálya hosszúsága (hány db egység hosszú a pálya)</param>
-    /// <param name="tileWidth">Ehy egység hossza (és mivel négyzet ezért széllesége is)</param>
     private void GenerateOneBigFloor(int tileCountX, int tileCountZ, float tileWidth)
     {
         floor = new("GrandFloor");
@@ -134,7 +112,6 @@ public class BoardLayout : MonoBehaviour
         floor.AddComponent<MeshCollider>();
     }
 
-
     private void PopulateEntireMeadow(int tileCountX, int tileCountY, float tileWidth)
     {
         GameObject flowerContainer = new("FlowerContainer");
@@ -159,7 +136,7 @@ public class BoardLayout : MonoBehaviour
 
         for (int s = 0; s < densityPerTile; s++)
         {
-            GameObject prefab = (Random.value < 0.7f) ? baseGrassPrefabs[Random.Range(0, baseGrassPrefabs.Length-1)] : detailFlowerPrefabs[Random.Range(0, detailFlowerPrefabs.Length-1)];
+            GameObject prefab = (Random.value < 0.7f) ? baseGrassPrefabs[Random.Range(0, baseGrassPrefabs.Length - 1)] : detailFlowerPrefabs[Random.Range(0, detailFlowerPrefabs.Length - 1)];
             float jitter = tileWidth * 0.6f;
             Vector3 pos = new(
                 xBase + Random.Range(-jitter, jitter),
@@ -178,6 +155,7 @@ public class BoardLayout : MonoBehaviour
             }
         }
     }
+
     public BaseUnit PlaceUnitAtTile(int x, int z, FactionsEnum fac, UnitTypesEnum unit, UnitCountpanel cardPanel)
     {
         UnitRegistryEntry entry = unitRegistry.GetEntry(unit, fac);
@@ -188,39 +166,29 @@ public class BoardLayout : MonoBehaviour
             return null;
         }
 
-        float worldX = (x * sizeOfTile) + (sizeOfTile / 2f);
-        float worldZ = (z * sizeOfTile) + (sizeOfTile / 2f);
-        Vector3 spawnPos = new(worldX, 0.5f, worldZ);
+        Vector3 spawnPos = GetWorldPositionFromTile(x, z);
 
         GameObject unitObj = Instantiate(entry.Prefab, spawnPos, Quaternion.identity);
         unitObj.transform.rotation = Quaternion.Euler(-90, 0, 0);
 
-        // 4. Lekérjük a komponenst a regiszterbõl kapott pontos C# Típus alapján!
-        // (Itt a korábbi 'unitType' helyett az 'entry.UnitType'-ot használjuk, pl. typeof(OrkArtillery))
         BaseUnit unitScript = unitObj.GetComponent(entry.ScriptType) as BaseUnit;
 
-        // --- JAVÍTÁS: Ha nincs rajta a script, kódból rákényszerítjük! ---
         if (unitScript == null)
         {
-            // Az AddComponent dinamikusan rárakja a pontos C# osztályt (pl. HumanMelee) a 3D modellre
             unitScript = unitObj.AddComponent(entry.ScriptType) as BaseUnit;
-
-            Debug.Log($"BoardLayout: A script nem volt rajta a Prefabon, ezért dinamikusan hozzáadtam a következõt: {entry.ScriptType.Name}");
+            Debug.Log($"BoardLayout: A script nem volt rajta a Prefabon, ezért dinamikusan hozzáadtam: {entry.ScriptType.Name}");
         }
 
         if (unitScript != null)
         {
             unitScript.TileX = x;
-            unitScript.TileZ = z; 
+            unitScript.TileZ = z;
             unitScript.MyCardPanel = cardPanel;
-        }
-        else
-        {
-            Debug.LogError($"BoardLayout: A legyártott objektumon nem található a kért '{entry.ScriptType.Name}' komponens!");
         }
 
         return unitScript;
     }
+
     private void FitCameraToMap()
     {
         float centerX = (widthOfTable * sizeOfTile) / 2f;
@@ -236,12 +204,8 @@ public class BoardLayout : MonoBehaviour
         gridContainer.transform.parent = transform;
 
         Material lineMat = new(Shader.Find("Sprites/Default"));
-
-        // Új szín beállítása: Szürke (0.5f) és 30%-os átlátszóság (0.3f)
-        // Color(R, G, B, A) -> 0 az átlátszó, 1 a telített
         lineMat.color = new Color(0.5f, 0.5f, 0.5f, 0.3f);
 
-        // Vízszintes vonalak
         for (int z = 0; z <= heightOfTable; z++)
         {
             CreateLine(
@@ -251,7 +215,6 @@ public class BoardLayout : MonoBehaviour
             );
         }
 
-        // Függõleges vonalak
         for (int x = 0; x <= widthOfTable; x++)
         {
             CreateLine(
@@ -262,112 +225,92 @@ public class BoardLayout : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Létrehoz egy egyenest a 3D térben két pont között egy LineRenderer komponens segítségével.
-    /// </summary>
-    /// <param name="start">A vonal kezdõpontjának világkoordinátája (Vector3)</param>
-    /// <param name="end">A vonal végpontjának világkoordinátája (Vector3)</param>
-    /// <param name="parent">A szülõ objektum (Transform), ami alá a létrejött vonal strukturálisan tartozni fog</param>
-    /// <param name="mat">A vonal megjelenítéséhez használt anyag (Material/Shader)</param>
     private void CreateLine(Vector3 start, Vector3 end, Transform parent, Material mat)
     {
-        // 1. Létrehozunk egy teljesen új, üres GameObjectet a hierarchiában "GridLine" névvel
         GameObject lineObj = new("GridLine");
-
-        // 2. Beállítjuk a vonal objektum szülõjét, hogy ne ömlesztve legyen a Scene gyökerében (pl. a Grid alá)
         lineObj.transform.parent = parent;
 
-        // 3. Rápakolunk egy LineRenderer komponenst a frissen létrehozott objektumra, ez felel a vonal kirajzolásáért
         LineRenderer lr = lineObj.AddComponent<LineRenderer>();
-
-        // 4. Átadjuk a kapott anyagot (színt/textúrát) a LineRenderernek, különben csúnya rózsaszín (Missing Material) lenne
         lr.material = mat;
-
-        // 5. Beállítjuk a vonal vastagságát a kezdõpontjánál (0.5 egység széles)
         lr.startWidth = 0.5f;
-
-        // 6. Beállítjuk a vonal vastagságát a végpontjánál (mivel ez is 0.5f, így végig egyenletes vastagságú lesz)
         lr.endWidth = 0.5f;
-
-        // 7. Engedélyezzük a világkoordináták használatát. Ha a szülõ objektum elmozdul, a vonal pontjai fixen a helyükön maradnak
         lr.useWorldSpace = true;
-
-        // 8. Megadjuk, hogy a vonalunk hány töréspontból áll. Mivel ez egy egyenes, pontosan 2 pontra van szükségünk
         lr.positionCount = 2;
-
-        // 9. Beállítjuk a vonal legelsõ pontját (0-s index) a megadott kezdõpont koordinátáira
         lr.SetPosition(0, start);
-
-        // 10. Beállítjuk a vonal második pontját (1-es index) a megadott végpont koordinátáira
         lr.SetPosition(1, end);
 
-        // 11. Statikusnak jelöljük az objektumot. Mivel a rácsvonalak nem mozognak a játék alatt, 
-        // ez segít a Unity-nek optimalizálni a renderelést (Batching), így jobb lesz a teljesítmény (FPS)
         lineObj.isStatic = true;
     }
 
-    private void CreateAreaForUnits() 
+    private void CreateAreaForUnits()
     {
         float zoneWidth = widthOfTable * sizeOfTile;
-        float zoneHeight = 5 * sizeOfTile;
+        float zoneHeight = PLAYER_ZONE * sizeOfTile;
 
-        // 1. Játékos zónája (Az elsõ 5 sor: Z = 0-tól 50-ig)
-        // Középpont kiszámítása: X a pálya fele, Z a zóna magasságának a fele
-        Vector3 p1Center = new (zoneWidth / 2f, 0.01f, zoneHeight / 2f); // 0.01f magasság, hogy a padló felett lebegjen picivel (z-fighting ellen)
+        Vector3 p1Center = new(zoneWidth / 2f, 0.01f, zoneHeight / 2f);
         CreateZoneVisual(p1Center, zoneWidth, zoneHeight, "Player1_Zone");
 
-        // 2. Játékos zónája (Az utolsó 5 sor: a pálya végétõl visszafelé 50 egység)
         float fullMapHeight = heightOfTable * sizeOfTile;
-        Vector3 p2Center = new (zoneWidth / 2f, 0.01f, fullMapHeight - (zoneHeight / 2f));
+        Vector3 p2Center = new(zoneWidth / 2f, 0.01f, fullMapHeight - (zoneHeight / 2f));
         CreateZoneVisual(p2Center, zoneWidth, zoneHeight, "Player2_Zone");
-
-
     }
 
     private void CreateZoneVisual(Vector3 center, float width, float height, string name)
     {
-        // Létrehozunk egy egyszerû lapos Unity 3D síkot
         GameObject zone = GameObject.CreatePrimitive(PrimitiveType.Quad);
         zone.name = name;
-        zone.transform.SetParent(floor.transform); // Beletesszük a nagy Floorba, hogy együtt mozogjanak
+        zone.transform.SetParent(floor.transform);
 
-        // Pozicionálás és méretezés
         zone.transform.position = center;
-        zone.transform.rotation = Quaternion.Euler(90, 0, 0); // Lefektetjük a földre
+        zone.transform.rotation = Quaternion.Euler(90, 0, 0);
         zone.transform.localScale = new Vector3(width, height, 1f);
 
-        // Töröljük a MeshCollidert, hogy a Raycast ne ebbe akadjon bele, hanem átmenjen a GrandFloorra!
         if (zone.TryGetComponent<MeshCollider>(out var collider))
         {
             Destroy(collider);
         }
 
-        // Színezés: Létrehozunk neki egy félig átlátszó sötét színt
         if (zone.TryGetComponent<MeshRenderer>(out var renderer))
         {
-            // A Unity beépített transzparens shaderét használjuk
             renderer.material = new Material(Shader.Find("Sprites/Default"));
-
-            // Fekete, de 30%-os átlátszósággal (Alpha = 0.3f), így csak picit sötétíti a füvet alatta
-            renderer.material.color = new Color(0f, 0f, 0f, 0.3f);
+            renderer.material.color = new Color(0f, 0f, 0f, 0.7f); // Sötétebb átlátszó zóna
         }
     }
 
-
     public void RemoveZoneVisuals()
     {
-        // Megkeressük az elsõ játékos zónáját a floor gyerekei között
         Transform p1Zone = floor.transform.Find("Player1_Zone");
-        if (p1Zone != null)
-        {
-            Destroy(p1Zone.gameObject);
-        }
+        if (p1Zone != null) Destroy(p1Zone.gameObject);
 
-        // Megkeressük a második játékos zónáját
         Transform p2Zone = floor.transform.Find("Player2_Zone");
-        if (p2Zone != null)
-        {
-            Destroy(p2Zone.gameObject);
-        }
+        if (p2Zone != null) Destroy(p2Zone.gameObject);
+    }
+
+    // --- UTILS & MOZGATÁS LOKÁCIÓ ---
+
+    public Vector3 GetWorldPositionFromTile(int x, int z)
+    {
+        float worldX = (x * sizeOfTile) + (sizeOfTile / 2f);
+        float worldZ = (z * sizeOfTile) + (sizeOfTile / 2f);
+
+        return new Vector3(worldX, 0.5f, worldZ);
+    }
+
+    /// <summary>
+    /// Végrehajtja az egység tényleges 3D-s fizikai elmozgatását a pályán.
+    /// </summary>
+    public void MoveUnitOnBoard(BaseUnit unit, int targetX, int targetZ)
+    {
+        if (unit == null) return;
+
+        // 1. Megkeressük a cél 3D koordinátáit
+        Vector3 targetWorldPosition = GetWorldPositionFromTile(targetX, targetZ);
+
+        // 2. Átrakjuk az egységet a megadott pozícióra
+        unit.transform.position = targetWorldPosition;
+
+        // 3. Frissítjük az egység belsõ adatait
+        unit.TileX = targetX;
+        unit.TileZ = targetZ;
     }
 }

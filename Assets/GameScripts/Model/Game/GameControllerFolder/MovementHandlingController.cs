@@ -1,39 +1,25 @@
 ﻿
+using Assets.GameScripts.Model.Game.Player;
 using UnityEngine;
 
 namespace Assets.GameScripts.Model.Game.GameControllerFolder
 {
-    public class MovementHandlingController : MonoBehaviour
+    public class MovementHandlingController 
     {
         public static MovementHandlingController Instance { get; private set; }
 
         private BaseUnit activeMovingUnit = null;
 
-        TurnModel turn;
-
-        private void Awake()
-        {
-            if (Instance != null && Instance != this)
-            {
-                
-                Destroy(gameObject);
-                return;
-            }
-            Instance = this;
-        }
-        private void Start()
-        {
-            turn = new TurnModel(UserGameController.Instance.GetPlayer);
-        }
+        private PlayerModel user;
         public bool HandleMovement(int x, int z, bool isRightClick)
         {
  
-            if (UserGameController.Instance == null || !turn.Getgamestarted)
+            if (UserGameController.Instance == null )
             {
                 return false;
             }
 
-            if (isRightClick)
+            if (isRightClick )
             {
                 if (activeMovingUnit != null)
                 {

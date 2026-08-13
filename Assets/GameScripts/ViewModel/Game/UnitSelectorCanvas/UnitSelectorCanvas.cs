@@ -22,8 +22,16 @@ namespace Assets.GameScripts.ViewModel.Game.UnitSelectorCanvas
             GenerateUnitSelectionUI();
             AddEventToStart();
             UpdateStartButtonState();
+            if (UserGameController.Instance != null)
+            {
+                UserGameController.Instance.OnDestroyUICanvas += DestroyThis;
+            }
 
 
+        }
+        private void DestroyThis()
+        {
+            Destroy(gameObject);
         }
 
         private void GenerateUnitSelectionUI()
@@ -123,10 +131,13 @@ namespace Assets.GameScripts.ViewModel.Game.UnitSelectorCanvas
 
         private void OnDestroy()
         {
-            // Biztonsági leiratkozás az objektum megsemmisülésekor
             foreach (var panel in unitPanels)
             {
                 if (panel != null) panel.OnUnitCountChanged -= HandleUnitCountChanged;
+            }
+            if (UserGameController.Instance != null)
+            {
+                UserGameController.Instance.OnDestroyUICanvas -= DestroyThis;
             }
         }
 
@@ -142,6 +153,8 @@ namespace Assets.GameScripts.ViewModel.Game.UnitSelectorCanvas
                 }
             );
         }
+
+
 
     }
 }

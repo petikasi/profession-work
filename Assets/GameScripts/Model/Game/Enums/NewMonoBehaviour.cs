@@ -6,7 +6,7 @@ namespace Assets.GameScripts.Model.Game.Enums
     public enum GamePhaseEnum
     {
         Deployment,
-        Movvment,
+        Movement,
         Lock,
         End
     }
