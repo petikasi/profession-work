@@ -3159,6 +3159,7 @@ GameObject:
   - component: {fileID: 563757294}
   - component: {fileID: 563757293}
   - component: {fileID: 563757297}
+  - component: {fileID: 563757298}
   m_Layer: 5
   m_Name: UnitSelectorCanvas
   m_TagString: Untagged
@@ -3264,6 +3265,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Assets.GameScripts.ViewModel.Game.UnitHolder.UnitCanvas
   unitCountPanelPrefab: {fileID: 2018276013071054467, guid: de82d68844af7c846a61e7e24739bd6b, type: 3}
   unitCountPanelParent: {fileID: 609514926}
+--- !u!114 &563757298
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 563757292}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0ca3c3b9091776044ae947550522274f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Assets.GameScripts.ViewModel.Game.UnitSelectorCanvas.StartButton
   startButton: {fileID: 1863661456}
 --- !u!1 &599699410
 GameObject:
@@ -7190,8 +7203,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff312b563689a9a4f823d60cfd8bf359, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BoardLayout
-  widthOfTable: 15
-  heightOfTable: 10
+  widthOfTable: 20
+  heightOfTable: 15
   sizeOfTile: 10
   grassMaterial: {fileID: 2100000, guid: bc688f85a29da6548a198a27784a8736, type: 2}
   prefabs:
@@ -7233,6 +7246,7 @@ MonoBehaviour:
   scaleMin: 2.5
   scaleMax: 4.5
   pivotOffset: 0.5
+  PLAYER_ZONE: 4
 --- !u!114 &1503768165
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -8,39 +8,48 @@ namespace Assets.GameScripts.ViewModel.Game.UnitSelectorCanvas
     {
         [SerializeField]private Button startButton;
 
-        private void Start()
+        private void Awake()
         {
-            startButton.gameObject.SetActive(false);
-
-            UserGameController.Instance.OnEveryUnitPlaced += SetStartButton;
-
+            // A UI gomb eseményét nyugodtan beállíthatjuk Awake-ben
             startButton.onClick.RemoveAllListeners();
             startButton.onClick.AddListener(() =>
             {
-                Debug.Log("Deck Setted to active");
                 if (UserGameController.Instance != null)
                 {
                     UserGameController.Instance.OnEveryUnitPlaced -= SetStartButton;
                 }
-
                 UserGameController.Instance.SetPlayerToActive();
-                DestroyButton();
+                Destroy(gameObject);
             });
         }
 
-        private void SetStartButton(bool stasus)
+        private void OnEnable()
         {
-            if (stasus == startButton.gameObject.activeSelf)
+            startButton.gameObject.SetActive(false);
+
+            if (UserGameController.Instance != null)
             {
-                startButton.gameObject.SetActive(stasus);
+                UserGameController.Instance.OnEveryUnitPlaced += SetStartButton;
+            }
+            else
+            {
+                Debug.LogError("[StartButton] UserGameController.Instance még mindig NULL!");
             }
         }
 
-
-        private void DestroyButton()
+        private void OnDisable()
         {
-            UserGameController.Instance.OnEveryUnitPlaced -= SetStartButton;
-            Destroy(gameObject);
+
+            if (UserGameController.Instance != null)
+            {
+                UserGameController.Instance.OnEveryUnitPlaced -= SetStartButton;
+            }
+        }
+
+        private void SetStartButton(bool status)
+        {
+            Debug.Log($"[StartButton] SetStartButton meghívva, új állapot: {status}");
+            startButton.gameObject.SetActive(status);
         }
     }
 }

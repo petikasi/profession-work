@@ -1,6 +1,7 @@
 using Assets.GameScripts.Model.Game.Board;
 using Assets.GameScripts.Model.Game.GameControllerFolder;
 using Assets.GameScripts.ViewModel.Game.UnitSelectorCanvas;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class BoardLayout : MonoBehaviour
@@ -23,6 +24,9 @@ public class BoardLayout : MonoBehaviour
     [SerializeField] private GameObject[] baseGrassPrefabs;
     [SerializeField] private GameObject[] detailFlowerPrefabs;
 
+    [Header("Highlights")]
+    [SerializeField] private GameObject movementHighlightPrefab; // Hozzáadva: Kijelölõ Quad / Prefab
+
     [Header("Meadow Density Settings")]
     [UnityEngine.Range(0, 1)]
     [SerializeField] private float decorationChance = 1.0f;
@@ -31,9 +35,16 @@ public class BoardLayout : MonoBehaviour
     [SerializeField] private float scaleMax = 4.5f;
     [SerializeField] private float pivotOffset = 0.5f;
 
+    // --- ELÉRHETÕSÉGI TULAJDONSÁGOK (Gettek) ---
+    public int GET_SIZE => sizeOfTile;
+    public int Width => widthOfTable;   // Hozzáadva
+    public int Height => heightOfTable; // Hozzáadva
+
     private bool isGenerated = false;
     private UnitRegistry unitRegistry = new();
     public int PLAYER_ZONE = 4;
+
+    private List<GameObject> activeHighlightObjects = new List<GameObject>(); // Active highlights container
 
     void Awake()
     {
@@ -45,6 +56,99 @@ public class BoardLayout : MonoBehaviour
 
         Instance = this;
     }
+
+    // ==========================================
+    // EGYSÉGEK NYILVÁNTARTÁSA & LEKÉRDEZÉSE
+    // ==========================================
+
+    /// <summary>
+    /// Visszaadja az adott rácsponton lévõ egységet (ha van ott).
+    /// </summary>
+    public BaseUnit GetUnitAt(int x, int z)
+    {
+        BaseUnit[] allUnits = FindObjectsOfType<BaseUnit>();
+        foreach (BaseUnit unit in allUnits)
+        {
+            if (unit.TileX == x && unit.TileZ == z)
+            {
+                return unit;
+            }
+        }
+        return null;
+    }
+
+    /// <summary>
+    /// Ellenõrzi, hogy van-e egység a megadott mezõn.
+    /// </summary>
+    public bool IsTileOccupied(int x, int z)
+    {
+        return GetUnitAt(x, z) != null;
+    }
+
+    // ==========================================
+    // MOZGÁSI ZÓNA MEGJELENÍTÉSE (VISUAL ZONE)
+    // ==========================================
+
+    /// <summary>
+    /// Megjeleníti a mozgási tartományt a megadott mezõkre.
+    /// </summary>
+    public void HighlightMovementTiles(List<Vector2Int> tiles)
+    {
+        ClearHighlightVisuals();
+
+        GameObject container = GameObject.Find("MovementHighlightsContainer");
+        if (container == null)
+        {
+            container = new GameObject("MovementHighlightsContainer");
+            container.transform.SetParent(transform);
+        }
+
+        foreach (Vector2Int tile in tiles)
+        {
+            Vector3 worldPos = GetWorldPositionFromTile(tile.x, tile.y);
+            worldPos.y = 0.05f; // Z-fighting megelõzése a padló felett
+
+            if (movementHighlightPrefab != null)
+            {
+                GameObject highlightObj = Instantiate(movementHighlightPrefab, worldPos, Quaternion.identity, container.transform);
+                activeHighlightObjects.Add(highlightObj);
+            }
+            else
+            {
+                // Fallback: Ha nincs prefab beállítva az Inspectorban, hozzunk létre egy sima áttetszõ Quad-ot
+                GameObject quad = GameObject.CreatePrimitive(PrimitiveType.Quad);
+                quad.transform.position = worldPos;
+                quad.transform.rotation = Quaternion.Euler(90, 0, 0);
+                quad.transform.localScale = new Vector3(sizeOfTile, sizeOfTile, 1f);
+                quad.transform.SetParent(container.transform);
+
+                if (quad.TryGetComponent<Collider>(out var col)) Destroy(col);
+                if (quad.TryGetComponent<MeshRenderer>(out var ren))
+                {
+                    ren.material = new Material(Shader.Find("Sprites/Default"));
+                    ren.material.color = new Color(0f, 0.5f, 1f, 0.4f); // Félig áttetszõ kék
+                }
+
+                activeHighlightObjects.Add(quad);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Eltávolítja a mozgási zóna kiemeléseit a pályáról.
+    /// </summary>
+    public void ClearHighlightVisuals()
+    {
+        foreach (GameObject obj in activeHighlightObjects)
+        {
+            if (obj != null) Destroy(obj);
+        }
+        activeHighlightObjects.Clear();
+    }
+
+    // ==========================================
+    // PÁLYA GENERÁLÁS ÉS EGYÉB FUNKCIÓK
+    // ==========================================
 
     public void GenerateBoardLayout()
     {
@@ -273,7 +377,7 @@ public class BoardLayout : MonoBehaviour
         if (zone.TryGetComponent<MeshRenderer>(out var renderer))
         {
             renderer.material = new Material(Shader.Find("Sprites/Default"));
-            renderer.material.color = new Color(0f, 0f, 0f, 0.7f); // Sötétebb átlátszó zóna
+            renderer.material.color = new Color(0f, 0f, 0f, 0.7f);
         }
     }
 
@@ -286,8 +390,6 @@ public class BoardLayout : MonoBehaviour
         if (p2Zone != null) Destroy(p2Zone.gameObject);
     }
 
-    // --- UTILS & MOZGATÁS LOKÁCIÓ ---
-
     public Vector3 GetWorldPositionFromTile(int x, int z)
     {
         float worldX = (x * sizeOfTile) + (sizeOfTile / 2f);
@@ -296,21 +398,17 @@ public class BoardLayout : MonoBehaviour
         return new Vector3(worldX, 0.5f, worldZ);
     }
 
-    /// <summary>
-    /// Végrehajtja az egység tényleges 3D-s fizikai elmozgatását a pályán.
-    /// </summary>
     public void MoveUnitOnBoard(BaseUnit unit, int targetX, int targetZ)
     {
         if (unit == null) return;
 
-        // 1. Megkeressük a cél 3D koordinátáit
         Vector3 targetWorldPosition = GetWorldPositionFromTile(targetX, targetZ);
 
-        // 2. Átrakjuk az egységet a megadott pozícióra
         unit.transform.position = targetWorldPosition;
 
-        // 3. Frissítjük az egység belsõ adatait
         unit.TileX = targetX;
         unit.TileZ = targetZ;
     }
+
+
 }

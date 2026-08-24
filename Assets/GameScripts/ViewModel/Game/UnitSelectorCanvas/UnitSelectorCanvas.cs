@@ -12,7 +12,6 @@ namespace Assets.GameScripts.ViewModel.Game.UnitSelectorCanvas
     {
         [SerializeField] private GameObject unitCountPanelPrefab;
         [SerializeField] private Transform unitCountPanelParent;
-        [SerializeField] private Button startButton;
 
         private List<UnitCountpanel> unitPanels = new();
         private int allUnitCount;
@@ -20,8 +19,6 @@ namespace Assets.GameScripts.ViewModel.Game.UnitSelectorCanvas
         void Start()
         {
             GenerateUnitSelectionUI();
-            AddEventToStart();
-            UpdateStartButtonState();
             if (UserGameController.Instance != null)
             {
                 UserGameController.Instance.OnDestroyUICanvas += DestroyThis;
@@ -107,27 +104,11 @@ namespace Assets.GameScripts.ViewModel.Game.UnitSelectorCanvas
 
             Debug.Log($"Még lehelyezésre váró egységek száma: {allUnitCount}");
 
-            UpdateStartButtonState();
         }
 
         /// <summary>
         /// Aktiválja a Start gombot, ha az összes egység felkerült a pályára (allUnitCount == 0).
         /// </summary>
-        private void UpdateStartButtonState()
-        {
-            if (startButton != null)
-            {
-                if (allUnitCount == 0)
-                {
-                    startButton.gameObject.SetActive(true);
-                }
-                else
-                {
-                    startButton.gameObject.SetActive(false);
-                }
-
-            }
-        }
 
         private void OnDestroy()
         {
@@ -139,19 +120,6 @@ namespace Assets.GameScripts.ViewModel.Game.UnitSelectorCanvas
             {
                 UserGameController.Instance.OnDestroyUICanvas -= DestroyThis;
             }
-        }
-
-        private void AddEventToStart() 
-        {
-            startButton.onClick.RemoveAllListeners();
-            startButton.onClick.AddListener(()
-                => {
-                    if (startButton != null)
-                    {
-                        
-                    }
-                }
-            );
         }
 
 
