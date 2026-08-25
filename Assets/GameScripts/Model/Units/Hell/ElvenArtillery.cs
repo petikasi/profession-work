@@ -9,6 +9,7 @@ public  class HellArtillery : BaseUnit
         Defense = 5;
         Shield = 10;
         MovementSpeed = 2;
+        Already_Moved = false;
         Range = 40;
     }
 

@@ -6,6 +6,7 @@ public class HumanMelee : BaseUnit
     {
         HealthPoint =20;
         AttackDamage = 4;
+        Already_Moved = false;
         Defense = 2;
         Shield = 5;
         MovementSpeed = 3;

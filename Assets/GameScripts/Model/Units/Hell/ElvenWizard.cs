@@ -8,6 +8,7 @@ public class HellWizard : BaseUnit
         AttackDamage = 6;
         Defense = 2;
         Shield = 10;
+        Already_Moved = false;
         MovementSpeed = 5;
         Range = 15;
     }

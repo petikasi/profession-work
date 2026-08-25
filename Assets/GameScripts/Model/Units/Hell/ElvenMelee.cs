@@ -7,6 +7,7 @@ public class HellMelee : BaseUnit
         HealthPoint =20;
         AttackDamage = 4;
         Defense = 2;
+        Already_Moved = false;
         Shield = 5;
         MovementSpeed = 3;
         Range = 1;

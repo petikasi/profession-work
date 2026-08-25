@@ -6,6 +6,7 @@ public class HellRanged : BaseUnit
     {
         HealthPoint = 10;
         AttackDamage = 5;
+        Already_Moved = false;
         Defense = 2;
         Shield = 5;
         MovementSpeed = 3;

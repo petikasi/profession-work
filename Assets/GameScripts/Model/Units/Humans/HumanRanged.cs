@@ -8,6 +8,7 @@ public class HumanRanged : BaseUnit
         AttackDamage = 5;
         Defense = 2;
         Shield = 5;
+        Already_Moved = false;
         MovementSpeed = 3;
         Range = 20;
     }

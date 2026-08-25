@@ -1,5 +1,6 @@
 using Assets.GameScripts.Model.Game.Enums;
 using Assets.GameScripts.Model.Game.GameControllerFolder;
+using Assets.GameScripts.Model.Game.Board;
 using Assets.GameScripts.Model.Game.Player;
 using Assets.GameScripts.ViewModel.Game.UnitSelectorCanvas;
 using System;
@@ -18,6 +19,7 @@ public class UserGameController : MonoBehaviour
 
     public event Action<bool> OnEveryUnitPlaced;
     public event Action OnDestroyUICanvas;
+    public event Action<bool> OnActivateEndTurnButton;
 
     private BaseUnit selectedUnitOnBoard;
     private List<Vector2Int> highlightedTiles = new(); // Eltároljuk az érvényes lépési mezõket
@@ -69,6 +71,25 @@ public class UserGameController : MonoBehaviour
         }
     }
 
+    public void EndPlayerTurn() 
+    {
+
+        OwnPlayer.CurrentGamePhase = GamePhaseEnum.Lock;
+    }
+
+    public void StartPlayerTurn()
+    {
+
+        foreach (BaseUnit unit in units) 
+        {
+            unit.Already_Moved = false;
+        
+        }
+        OwnPlayer.CurrentGamePhase = GamePhaseEnum.Movement;
+    }
+
+
+
     public void SetPlayerToActive()
     {
         OwnPlayer.CurrentGamePhase = GamePhaseEnum.Movement;
@@ -78,6 +99,7 @@ public class UserGameController : MonoBehaviour
             BoardLayout.Instance.RemoveZoneVisuals();
         }
 
+        OnActivateEndTurnButton?.Invoke(true);
         OnDestroyUICanvas?.Invoke();
 
         GC.Collect();
@@ -123,14 +145,23 @@ public class UserGameController : MonoBehaviour
     {
         if (OwnPlayer.CurrentGamePhase != GamePhaseEnum.Movement) return;
 
-        // Mindig töröljük az elõzõ kiemelést
         DeselectUnit();
 
         BaseUnit unitAtTile = GetUnitAt(x, z);
 
         if (unitAtTile != null)
         {
+
+          
             selectedUnitOnBoard = unitAtTile;
+
+            if (unitAtTile.Already_Moved!)
+            {
+                Debug.Log($" {selectedUnitOnBoard.name} már mozgott");
+                return;
+            }
+
+
             Debug.Log($"Egység kijelölve mozgatásra: {selectedUnitOnBoard.name} | Sebeség: {selectedUnitOnBoard.MovementSpeed}");
 
             // Kiszámoljuk és kijelöljük a mozgási tartományt
@@ -140,6 +171,8 @@ public class UserGameController : MonoBehaviour
 
     private void CalculateAndShowMovementRange(int startX, int startZ, int moveSpeed)
     {
+
+
         highlightedTiles.Clear();
 
         int boardWidth = BoardLayout.Instance.Width;
@@ -189,21 +222,22 @@ public class UserGameController : MonoBehaviour
         }
 
         Vector2Int targetPos = new Vector2Int(targetX, targetZ);
-
-        // Ellenõrizzük, hogy a kiválasztott célmezõ érvényes-e (benne van-e a mozgási tartományban)
         if (!highlightedTiles.Contains(targetPos))
         {
             Debug.LogWarning($"A célmezõ ({targetX}, {targetZ}) kívül esik a(z) {selectedUnitOnBoard.name} mozgási tartományán!");
             return;
         }
-
+        if (selectedUnitOnBoard.Already_Moved!) 
+        {
+            Debug.LogWarning($"{selectedUnitOnBoard.name} uni már mozgott");
+            return;
+        }
         if (BoardLayout.Instance != null)
         {
             BoardLayout.Instance.MoveUnitOnBoard(selectedUnitOnBoard, targetX, targetZ);
 
             Debug.Log($"A(z) {selectedUnitOnBoard.name} sikeresen elmozdult a ({targetX}, {targetZ}) mezõre.");
 
-            // Mozgás után megszüntetjük a kijelölést és a vizuális zónát
             DeselectUnit();
         }
     }
@@ -218,10 +252,6 @@ public class UserGameController : MonoBehaviour
             BoardLayout.Instance.ClearHighlightVisuals();
         }
     }
-
-    // ==========================================
-    // LEHELYEZÉS ÉS ELTÁVOLÍTÁS UTÁNI KISZOLGÁLÓK
-    // ==========================================
 
     private void TryRemoveUnitAt(int x, int z)
     {

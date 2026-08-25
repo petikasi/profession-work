@@ -5,6 +5,7 @@ public class HumanWizard : BaseUnit
     protected override void InitializeStats()
     {
         HealthPoint = 50;
+        Already_Moved = false;
         AttackDamage = 6;
         Defense = 2;
         Shield = 10;

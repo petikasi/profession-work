@@ -7,6 +7,7 @@ public  class HumanSpecial : BaseUnit
         HealthPoint = 200;
         AttackDamage = 20;
         Defense = 10;
+        Already_Moved = false;
         Shield = 50;
         MovementSpeed = 10;
         Range =1;

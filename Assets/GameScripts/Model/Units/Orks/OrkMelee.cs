@@ -9,6 +9,7 @@ public class OrkMelee : BaseUnit
         Defense = 10;
         Shield = 50;
         MovementSpeed = 10;
+        Already_Moved = false;
         Range = 1;
     }
 

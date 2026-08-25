@@ -9,6 +9,7 @@ public class OrkWizard : BaseUnit
         Defense = 2;
         Shield = 10;
         MovementSpeed = 5;
+        Already_Moved = false;
         Range = 15;
     }
 

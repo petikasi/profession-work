@@ -1,5 +1,5 @@
 ﻿using Assets.GameScripts.Model.Game.Enums;
-using Assets.GameScripts.Model.Game.GameControllerFolder;
+using Assets.GameScripts.Model.Game.Board;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;

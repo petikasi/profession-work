@@ -8,6 +8,7 @@ public class OrkAdvancedMelee : BaseUnit
         Defense = 2;
         Shield = 5;
         MovementSpeed = 3;
+        Already_Moved = false;
         Range = 1;
     }
 

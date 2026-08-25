@@ -9,6 +9,7 @@ public class ElvenAdvancedMelee : BaseUnit
         Shield = 5;
         MovementSpeed = 3;
         Range = 1;
+        Already_Moved = false;
     }
 
     protected override void Die()

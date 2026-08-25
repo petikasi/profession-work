@@ -1,34 +1,34 @@
-﻿using Assets.GameScripts.Model.Game.GameControllerFolder;
+﻿using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace Assets.GameScripts.ViewModel.Game.UnitSelectorCanvas
 {
-    public class StartButton : MonoBehaviour
+    public class EndTurnButton : MonoBehaviour
     {
-        [SerializeField]private Button startButton;
+        [SerializeField] private Button endTurnButton;
 
         private void Awake()
         {
-            startButton.onClick.RemoveAllListeners();
-            startButton.onClick.AddListener(() =>
+            endTurnButton.onClick.RemoveAllListeners();
+            endTurnButton.onClick.AddListener(() =>
             {
                 if (UserGameController.Instance != null)
                 {
-                    UserGameController.Instance.OnEveryUnitPlaced -= SetStartButton;
+                    UserGameController.Instance.OnActivateEndTurnButton -= SetEndButtonStatus;
                 }
-                UserGameController.Instance.SetPlayerToActive();
+                UserGameController.Instance.EndPlayerTurn();
                 Destroy(gameObject);
             });
         }
 
         private void OnEnable()
         {
-            startButton.gameObject.SetActive(false);
+            endTurnButton.gameObject.SetActive(false);
 
             if (UserGameController.Instance != null)
             {
-                UserGameController.Instance.OnEveryUnitPlaced += SetStartButton;
+                UserGameController.Instance.OnActivateEndTurnButton += SetEndButtonStatus;
             }
             else
             {
@@ -41,14 +41,15 @@ namespace Assets.GameScripts.ViewModel.Game.UnitSelectorCanvas
 
             if (UserGameController.Instance != null)
             {
-                UserGameController.Instance.OnEveryUnitPlaced -= SetStartButton;
+                UserGameController.Instance.OnActivateEndTurnButton -= SetEndButtonStatus;
             }
         }
 
-        private void SetStartButton(bool status)
+        private void SetEndButtonStatus(bool status)
         {
             Debug.Log($"[StartButton] SetStartButton meghívva, új állapot: {status}");
-            startButton.gameObject.SetActive(status);
+            endTurnButton.gameObject.SetActive(status);
         }
+
     }
 }

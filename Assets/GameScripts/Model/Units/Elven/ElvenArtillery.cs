@@ -10,6 +10,7 @@ public  class ElvenArtillery : BaseUnit
         Shield = 10;
         MovementSpeed = 2;
         Range = 40;
+        Already_Moved = false;
     }
 
     protected override void Die()

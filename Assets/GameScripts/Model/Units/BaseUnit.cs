@@ -21,7 +21,9 @@ using UnityEngine;
         public int TileX { get; set; }
         public int TileZ { get; set; }
 
-        protected abstract void InitializeStats();
+        public bool Already_Moved { get; set; }
+
+    protected abstract void InitializeStats();
 
         protected virtual void Awake()
         {

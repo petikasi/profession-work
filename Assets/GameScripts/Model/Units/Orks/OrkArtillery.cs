@@ -8,6 +8,7 @@ public  class OrkArtillery : BaseUnit
         AttackDamage = 10;
         Defense = 5;
         Shield = 10;
+        Already_Moved = false;
         MovementSpeed = 2;
         Range = 40;
     }

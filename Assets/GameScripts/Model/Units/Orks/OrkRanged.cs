@@ -9,6 +9,7 @@ public class OrkRanged : BaseUnit
         Defense = 2;
         Shield = 5;
         MovementSpeed = 3;
+        Already_Moved = false;
         Range = 20;
     }
 

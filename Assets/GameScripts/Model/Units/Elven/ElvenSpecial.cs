@@ -10,6 +10,7 @@ public  class ElvenSpecial : BaseUnit
         Shield = 50;
         MovementSpeed = 10;
         Range =1;
+        Already_Moved = false;
     }
 
     protected override void Die()
