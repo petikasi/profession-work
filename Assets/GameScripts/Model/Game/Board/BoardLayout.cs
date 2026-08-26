@@ -381,7 +381,7 @@ namespace Assets.GameScripts.Model.Game.Board {
             return new Vector3(worldX, 0.5f, worldZ);
         }
 
-        public void MoveUnitOnBoard(BaseUnit unit, int targetX, int targetZ, float duration = 1.0f)
+        public void MoveUnitOnBoard(BaseUnit unit, int targetX, int targetZ, float duration = 2.0f)
         {
             if (unit == null) return;
 

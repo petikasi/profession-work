@@ -22,7 +22,6 @@ namespace Assets.GameScripts.ViewModel.Game.UnitSelectorCanvas
         private int currentCount;
         private bool zeroFromUnit = false;
 
-        // EVENT: Jelezzük a Canvas-nak, ha változik a darabszám (true = csökkent, false = nőtt)
         public event Action<bool> OnUnitCountChanged;
 
         public void Initiate(UnitTypesEnum type, FactionsEnum faction, int currentCount)

@@ -18,7 +18,7 @@ public class UserGameController : MonoBehaviour
     private List<BaseUnit> units = new();
 
     public event Action<bool> OnEveryUnitPlaced;
-    public event Action OnDestroyUICanvas;
+    public event Action OnDestroyUnececeryView;
     public event Action<bool> OnActivateEndTurnButton;
 
     private BaseUnit selectedUnitOnBoard;
@@ -75,6 +75,7 @@ public class UserGameController : MonoBehaviour
     {
 
         OwnPlayer.CurrentGamePhase = GamePhaseEnum.Lock;
+        OnActivateEndTurnButton?.Invoke(false);
     }
 
     public void StartPlayerTurn()
@@ -86,6 +87,7 @@ public class UserGameController : MonoBehaviour
         
         }
         OwnPlayer.CurrentGamePhase = GamePhaseEnum.Movement;
+        OnActivateEndTurnButton?.Invoke(true);
     }
 
 
@@ -100,9 +102,8 @@ public class UserGameController : MonoBehaviour
         }
 
         OnActivateEndTurnButton?.Invoke(true);
-        OnDestroyUICanvas?.Invoke();
+        OnDestroyUnececeryView?.Invoke();
 
-        GC.Collect();
     }
 
     private void HandlePlacing(int x, int z)

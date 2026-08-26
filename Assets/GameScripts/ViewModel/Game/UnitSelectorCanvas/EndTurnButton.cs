@@ -15,10 +15,10 @@ namespace Assets.GameScripts.ViewModel.Game.UnitSelectorCanvas
             {
                 if (UserGameController.Instance != null)
                 {
-                    UserGameController.Instance.OnActivateEndTurnButton -= SetEndButtonStatus;
+                    UserGameController.Instance.OnActivateEndTurnButton += SetEndButtonStatus;
                 }
+
                 UserGameController.Instance.EndPlayerTurn();
-                Destroy(gameObject);
             });
         }
 
@@ -47,7 +47,7 @@ namespace Assets.GameScripts.ViewModel.Game.UnitSelectorCanvas
 
         private void SetEndButtonStatus(bool status)
         {
-            Debug.Log($"[StartButton] SetStartButton meghívva, új állapot: {status}");
+            Debug.Log($"[Endbutton] Endbutton meghívva, új állapot: {status}");
             endTurnButton.gameObject.SetActive(status);
         }
 

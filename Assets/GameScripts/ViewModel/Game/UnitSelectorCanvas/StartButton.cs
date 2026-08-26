@@ -6,29 +6,30 @@ namespace Assets.GameScripts.ViewModel.Game.UnitSelectorCanvas
 {
     public class StartButton : MonoBehaviour
     {
-        [SerializeField]private Button startButton;
+        [SerializeField] private Button startButton;
 
         private void Awake()
         {
-            startButton.onClick.RemoveAllListeners();
-            startButton.onClick.AddListener(() =>
+            if (startButton == null)
             {
-                if (UserGameController.Instance != null)
-                {
-                    UserGameController.Instance.OnEveryUnitPlaced -= SetStartButton;
-                }
-                UserGameController.Instance.SetPlayerToActive();
-                Destroy(gameObject);
-            });
+                startButton = GetComponent<Button>();
+            }
+
+            startButton.onClick.RemoveAllListeners();
+            startButton.onClick.AddListener(OnStartButtonClicked);
         }
 
         private void OnEnable()
         {
-            startButton.gameObject.SetActive(false);
+            if (startButton != null)
+            {
+                startButton.gameObject.SetActive(false);
+            }
 
             if (UserGameController.Instance != null)
             {
                 UserGameController.Instance.OnEveryUnitPlaced += SetStartButton;
+                UserGameController.Instance.OnDestroyUnececeryView += OnDestroyButton;
             }
             else
             {
@@ -38,17 +39,43 @@ namespace Assets.GameScripts.ViewModel.Game.UnitSelectorCanvas
 
         private void OnDisable()
         {
-
             if (UserGameController.Instance != null)
             {
                 UserGameController.Instance.OnEveryUnitPlaced -= SetStartButton;
+                UserGameController.Instance.OnDestroyUnececeryView -= OnDestroyButton;
+            }
+        }
+
+        private void OnStartButtonClicked()
+        {
+            if (UserGameController.Instance != null)
+            {
+                UserGameController.Instance.SetPlayerToActive();
             }
         }
 
         private void SetStartButton(bool status)
         {
             Debug.Log($"[StartButton] SetStartButton meghívva, új állapot: {status}");
-            startButton.gameObject.SetActive(status);
+            if (startButton != null)
+            {
+                startButton.gameObject.SetActive(status);
+            }
+        }
+
+        private void OnDestroyButton()
+        {
+            Debug.Log("[StartButton] StartButton eltüntetése (Gameobject törlése)...");
+
+            // Biztonságosan csak a gomb objektumát töröljük, nem az egész Canvast!
+            if (startButton != null)
+            {
+                Destroy(startButton.gameObject);
+            }
+            else
+            {
+                Destroy(gameObject);
+            }
         }
     }
 }

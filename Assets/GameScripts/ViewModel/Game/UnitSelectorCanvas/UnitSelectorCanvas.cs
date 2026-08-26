@@ -1,51 +1,103 @@
+using Assets.GameScripts.Model.Game.Enums;
 using Assets.GameScripts.Model.Game.GameControllerFolder;
-using UnityEngine;
-using System.Collections.Generic;
 using System;
+using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.UI;
 
 namespace Assets.GameScripts.ViewModel.Game.UnitSelectorCanvas
 {
-
-
     public class UnitSelectorCanvas : MonoBehaviour
     {
         [SerializeField] private GameObject unitCountPanelPrefab;
         [SerializeField] private Transform unitCountPanelParent;
+        [SerializeField] private Button randButton;
 
         private List<UnitCountpanel> unitPanels = new();
         private int allUnitCount;
 
+        private void OnEnable()
+        {
+            if (UserGameController.Instance != null)
+            {
+                UserGameController.Instance.OnDestroyUnececeryView += DestroyUnitPanels;
+            }
+        }
+
+        private void OnDisable()
+        {
+            if (UserGameController.Instance != null)
+            {
+                UserGameController.Instance.OnDestroyUnececeryView -= DestroyUnitPanels;
+            }
+
+            // Tisztítsuk meg a feliratkozásokat a megelõzés érdekében
+            foreach (var panel in unitPanels)
+            {
+                if (panel != null)
+                {
+                    panel.OnUnitCountChanged -= HandleUnitCountChanged;
+                }
+            }
+        }
+
         void Start()
         {
             GenerateUnitSelectionUI();
-            if (UserGameController.Instance != null)
+
+            if (randButton != null)
             {
-                UserGameController.Instance.OnDestroyUICanvas += DestroyThis;
+                randButton.onClick.RemoveAllListeners();
+                randButton.onClick.AddListener(() =>
+                {
+                    if (UserGameController.Instance != null)
+                    {
+                        UserGameController.Instance.StartPlayerTurn();
+                    }
+                });
             }
-
-
         }
-        private void DestroyThis()
+
+        private void DestroyUnitPanels()
         {
-            Destroy(gameObject);
+            Debug.Log("[UnitSelectorCanvas] Egységválasztó panelek, szülõ konténer és a script eltávolítása...");
+
+            // 1. Töröljük a gyermek kártyákat
+            foreach (var unitPanel in unitPanels)
+            {
+                if (unitPanel != null && unitPanel.gameObject != null)
+                {
+                    Destroy(unitPanel.gameObject);
+                }
+            }
+            unitPanels.Clear();
+
+            // 3. Töröljük a szülõ Panel GameObject-jét (amiben a kártyák voltak)
+            /*if (unitCountPanelParent != null)
+            {
+                Destroy(unitCountPanelParent.gameObject);
+            }*/
+
+            // 4. Eltávolítjuk magát a UnitSelectorCanvas script komponenst a Canvasról
+           //Destroy(this);
         }
 
         private void GenerateUnitSelectionUI()
         {
-  
             foreach (var panel in unitPanels)
             {
                 if (panel != null) panel.OnUnitCountChanged -= HandleUnitCountChanged;
             }
 
-            foreach (Transform child in unitCountPanelParent)
+            if (unitCountPanelParent != null)
             {
-                Destroy(child.gameObject);
+                foreach (Transform child in unitCountPanelParent)
+                {
+                    Destroy(child.gameObject);
+                }
             }
             unitPanels.Clear();
 
-            // 2. Pakli és frakció lekérése
             var selectedDeck = DeckLoaderController.Instance.SelectedDeck;
 
             if (selectedDeck == null)
@@ -54,9 +106,7 @@ namespace Assets.GameScripts.ViewModel.Game.UnitSelectorCanvas
                 return;
             }
 
-            // Kezdõ egységszám eltárolása
             allUnitCount = selectedDeck.Count;
-
             FactionsEnum currentFaction = selectedDeck.FactionsGet;
 
             foreach (UnitTypesEnum unitType in Enum.GetValues(typeof(UnitTypesEnum)))
@@ -73,10 +123,7 @@ namespace Assets.GameScripts.ViewModel.Game.UnitSelectorCanvas
                 if (newPanel != null)
                 {
                     newPanel.Initiate(unitType, currentFaction, totalCountOfThisUnit);
-
-                    // Feliratkozunk a panel eseményére!
                     newPanel.OnUnitCountChanged += HandleUnitCountChanged;
-
                     unitPanels.Add(newPanel);
                 }
                 else
@@ -85,44 +132,21 @@ namespace Assets.GameScripts.ViewModel.Game.UnitSelectorCanvas
                 }
             }
 
-            Debug.Log($"Sikeresen legenerálva és eltárolva {unitPanels.Count} darab egyedi egységtípus kártya. Összes lehelyezendõ egység: {allUnitCount}");
+            Debug.Log($"Sikeresen legenerálva {unitPanels.Count} darab kártya panel.");
         }
 
-        /// <summary>
-        /// Ez a függvény fut le minden alkalommal, amikor egy egységet leraknak vagy levesznek a pályáról.
-        /// </summary>
         private void HandleUnitCountChanged(bool isDecreased)
         {
             if (isDecreased)
             {
-                allUnitCount--; // Egység felkerült a pályára
+                allUnitCount--;
             }
             else
             {
-                allUnitCount++; // Egységet visszavettek a pályáról
+                allUnitCount++;
             }
 
             Debug.Log($"Még lehelyezésre váró egységek száma: {allUnitCount}");
-
         }
-
-        /// <summary>
-        /// Aktiválja a Start gombot, ha az összes egység felkerült a pályára (allUnitCount == 0).
-        /// </summary>
-
-        private void OnDestroy()
-        {
-            foreach (var panel in unitPanels)
-            {
-                if (panel != null) panel.OnUnitCountChanged -= HandleUnitCountChanged;
-            }
-            if (UserGameController.Instance != null)
-            {
-                UserGameController.Instance.OnDestroyUICanvas -= DestroyThis;
-            }
-        }
-
-
-
     }
 }
