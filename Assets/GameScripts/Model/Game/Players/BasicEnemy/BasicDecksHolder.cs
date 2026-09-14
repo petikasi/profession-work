@@ -4,13 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Assets.GameScripts.Model.BasicEnemy
+namespace Assets.GameScripts.Model.Game.Players.BasicEnemy
 {
     public class BasicDecksHolder
     {
 
-          // 1. Pakli: Kiegyensúlyozott menetelő sereg (16 egység)
-    public static readonly List<(FactionsEnum Faction, UnitTypesEnum UnitType)> HumanBalancedDeck = new()
+        // 1. Pakli: Kiegyensúlyozott menetelő sereg (16 egység)
+        public static readonly List<(FactionsEnum Faction, UnitTypesEnum UnitType)> HumanBalancedDeck = new()
     {
         // Elővéd (6x Sworn-Brother)
         (FactionsEnum.Human, UnitTypesEnum.BasicMelee), (FactionsEnum.Human, UnitTypesEnum.BasicMelee),
@@ -160,6 +160,7 @@ namespace Assets.GameScripts.Model.BasicEnemy
         (FactionsEnum.Hell, UnitTypesEnum.Artillery), (FactionsEnum.Hell, UnitTypesEnum.Artillery),
         (FactionsEnum.Hell, UnitTypesEnum.Artillery), (FactionsEnum.Hell, UnitTypesEnum.Artillery)
     };
-
+    
+    
     }
 }

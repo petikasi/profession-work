@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using Assets.GameScripts.Model.Game.Players.BasicEnemy;
 
 public class UserGameController : MonoBehaviour
 {
@@ -15,7 +16,8 @@ public class UserGameController : MonoBehaviour
     public PlayerModel OwnPlayer { get; private set; }
     private bool hasSelectedUnit = false;
     private UnitCountpanel selectedCardScript;
-    private List<BaseUnit> units = new();
+    private List<BaseUnit> friendlyunits = new();
+    private List<BaseUnit> enemyunits = new();
 
     public event Action<bool> OnEveryUnitPlaced;
     public event Action OnDestroyUnececeryView;
@@ -24,7 +26,7 @@ public class UserGameController : MonoBehaviour
     private BaseUnit selectedUnitOnBoard;
     private List<Vector2Int> highlightedTiles = new(); // Eltároljuk az érvényes lépési mezõket
     private int unitCount;
-
+    
     public PlayerModel GetPlayer => OwnPlayer;
 
     private void Awake()
@@ -81,7 +83,7 @@ public class UserGameController : MonoBehaviour
     public void StartPlayerTurn()
     {
 
-        foreach (BaseUnit unit in units) 
+        foreach (BaseUnit unit in friendlyunits) 
         {
             unit.Already_Moved = false;
         
@@ -94,6 +96,7 @@ public class UserGameController : MonoBehaviour
 
     public void SetPlayerToActive()
     {
+        PlaceAllEnemy();
         OwnPlayer.CurrentGamePhase = GamePhaseEnum.Movement;
 
         if (BoardLayout.Instance != null)
@@ -104,6 +107,73 @@ public class UserGameController : MonoBehaviour
         OnActivateEndTurnButton?.Invoke(true);
         OnDestroyUnececeryView?.Invoke();
 
+    }
+
+    private void PlaceAllEnemy()
+    {
+        if (BoardLayout.Instance == null)
+        {
+            Debug.LogError("[UserGameController] BoardLayout.Instance NULL, nem lehet lehelyezni az ellenségeket!");
+            return;
+        }
+
+        List<(FactionsEnum Faction, UnitTypesEnum UnitType)> enemyDeck = DeckManager.GetRandomDeck();
+
+        if (enemyDeck == null || enemyDeck.Count == 0)
+        {
+            Debug.LogWarning("[UserGameController] Az ellenséges pakli üres!");
+            return;
+        }
+
+        List<Vector2Int> availableTiles = new List<Vector2Int>();
+        int boardWidth = BoardLayout.Instance.Width;
+        int boardHeight = BoardLayout.Instance.Height;
+        int enemyZoneStart = boardHeight - BoardLayout.Instance.PLAYER_ZONE;
+
+        for (int x = 0; x < boardWidth; x++)
+        {
+            for (int z = enemyZoneStart; z < boardHeight; z++)
+            {
+                // Csak az üres mezõket vesszük figyelembe
+                if (GetUnitAt(x, z) == null)
+                {
+                    availableTiles.Add(new Vector2Int(x, z));
+                }
+            }
+        }
+        // 3. Mezõk megkeverése (Fisher-Yates shuffle)
+        for (int i = 0; i < availableTiles.Count; i++)
+        {
+            Vector2Int temp = availableTiles[i];
+            int randomIndex = UnityEngine.Random.Range(i, availableTiles.Count);
+            availableTiles[i] = availableTiles[randomIndex];
+            availableTiles[randomIndex] = temp;
+        }
+
+        // 4. Egységek lehelyezése a megkevert mezõkre
+        int placeCount = Mathf.Min(enemyDeck.Count, availableTiles.Count);
+
+        for (int i = 0; i < placeCount; i++)
+        {
+            var unitData = enemyDeck[i];
+            Vector2Int tile = availableTiles[i];
+
+            BaseUnit spawnedEnemy = BoardLayout.Instance.PlaceUnitAtTile(
+                tile.x,
+                tile.y,
+                unitData.Faction,
+                unitData.UnitType,
+                null
+            );
+
+            if (spawnedEnemy != null)
+            {
+                spawnedEnemy.Player = PlayerEnum.Black; // Ellenséges játékos beállítása
+                enemyunits.Add(spawnedEnemy);
+            }
+        }
+
+        Debug.Log($"[UserGameController] Sikeresen lehelyezve {enemyunits.Count} ellenséges egység.");
     }
 
     private void HandlePlacing(int x, int z)
@@ -122,7 +192,7 @@ public class UserGameController : MonoBehaviour
 
             if (unit != null)
             {
-                units.Add(unit);
+                friendlyunits.Add(unit);
                 selectedCardScript.DecreaseCount();
                 ClearSelection();
                 unitCount--;
@@ -228,6 +298,7 @@ public class UserGameController : MonoBehaviour
             Debug.LogWarning($"A célmezõ ({targetX}, {targetZ}) kívül esik a(z) {selectedUnitOnBoard.name} mozgási tartományán!");
             return;
         }
+
         if (selectedUnitOnBoard.Already_Moved!) 
         {
             Debug.LogWarning($"{selectedUnitOnBoard.name} uni már mozgott");
@@ -266,7 +337,7 @@ public class UserGameController : MonoBehaviour
                 unitCount++;
             }
 
-            units.Remove(unitToRemove);
+            friendlyunits.Remove(unitToRemove);
             Destroy(unitToRemove.gameObject);
 
             Debug.Log($"Egység sikeresen visszavéve a ({x}, {z}) koordinátáról.");
@@ -275,7 +346,7 @@ public class UserGameController : MonoBehaviour
 
     public BaseUnit GetUnitAt(int x, int z)
     {
-        return units.FirstOrDefault(u => u != null && u.TileX == x && u.TileZ == z);
+        return friendlyunits.FirstOrDefault(u => u != null && u.TileX == x && u.TileZ == z);
     }
 
     private void ClearSelection()

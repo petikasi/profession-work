@@ -11,7 +11,6 @@ namespace Assets.GameScripts.ViewModel.Game.UnitSelectorCanvas
     {
         [SerializeField] private GameObject unitCountPanelPrefab;
         [SerializeField] private Transform unitCountPanelParent;
-        [SerializeField] private Button randButton;
 
         private List<UnitCountpanel> unitPanels = new();
         private int allUnitCount;
@@ -45,17 +44,6 @@ namespace Assets.GameScripts.ViewModel.Game.UnitSelectorCanvas
         {
             GenerateUnitSelectionUI();
 
-            if (randButton != null)
-            {
-                randButton.onClick.RemoveAllListeners();
-                randButton.onClick.AddListener(() =>
-                {
-                    if (UserGameController.Instance != null)
-                    {
-                        UserGameController.Instance.StartPlayerTurn();
-                    }
-                });
-            }
         }
 
         private void DestroyUnitPanels()

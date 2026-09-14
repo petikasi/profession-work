@@ -396,7 +396,7 @@ namespace Assets.GameScripts.Model.Game.Board {
             {
                 if (runningCoroutine != null) StopCoroutine(runningCoroutine);
             }
-
+            unit.Already_Moved = true;
             activeMovements[unit.transform] = StartCoroutine(AnimateUnitMovement(unit.transform, startWorldPosition, targetWorldPosition, duration));
         }
 
