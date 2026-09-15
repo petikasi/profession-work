@@ -37,6 +37,10 @@ namespace Assets.GameScripts.Model.Game.Board {
         [SerializeField] private float scaleMax = 4.5f;
         [SerializeField] private float pivotOffset = 0.5f;
 
+        private Color greenColor = new Color(0f, 1f, 0f, 0.4f);
+        private Color blueColor = new Color(0f, 0.5f, 1f, 0.5f);
+        private Color redColor = new Color(1f, 0f, 0f, 0.5f);
+
         public int GET_SIZE => sizeOfTile;
         public int Width => widthOfTable;
         public int Height => heightOfTable;
@@ -79,7 +83,7 @@ namespace Assets.GameScripts.Model.Game.Board {
             return GetUnitAt(x, z) != null;
         }
 
-        public void HighlightMovementTiles(List<Vector2Int> tiles)
+        public void HighlightMovementTiles(List<Vector2Int> moveTiles, List<Vector2Int> friendlyTiles = null, List<Vector2Int> enemyTiles = null)
         {
             ClearHighlightVisuals();
 
@@ -88,35 +92,69 @@ namespace Assets.GameScripts.Model.Game.Board {
             {
                 container = new GameObject("MovementHighlightsContainer");
                 container.transform.SetParent(transform);
+            }  
+
+           
+
+            // 1. ZÖLD: Szabad lépõmezõk
+            if (moveTiles != null)
+            {
+                foreach (Vector2Int tile in moveTiles)
+                {
+                    CreateHighlight(tile, greenColor, container);
+                }
             }
 
-            foreach (Vector2Int tile in tiles)
+            // 2. KÉK: Szövetséges mezõk
+            if (friendlyTiles != null)
             {
-                Vector3 worldPos = GetWorldPositionFromTile(tile.x, tile.y);
-                worldPos.y = 0.05f;
-
-                if (movementHighlightPrefab != null)
+                foreach (Vector2Int tile in friendlyTiles)
                 {
-                    GameObject highlightObj = Instantiate(movementHighlightPrefab, worldPos, Quaternion.identity, container.transform);
-                    activeHighlightObjects.Add(highlightObj);
+                    CreateHighlight(tile, blueColor, container);
                 }
-                else
+            }
+
+            // 3. PIROS: Ellenséges mezõk
+            if (enemyTiles != null)
+            {
+                foreach (Vector2Int tile in enemyTiles)
                 {
-                    GameObject quad = GameObject.CreatePrimitive(PrimitiveType.Quad);
-                    quad.transform.position = worldPos;
-                    quad.transform.rotation = Quaternion.Euler(90, 0, 0);
-                    quad.transform.localScale = new Vector3(sizeOfTile, sizeOfTile, 1f);
-                    quad.transform.SetParent(container.transform);
-
-                    if (quad.TryGetComponent<Collider>(out var col)) Destroy(col);
-                    if (quad.TryGetComponent<MeshRenderer>(out var ren))
-                    {
-                        ren.material = new Material(Shader.Find("Sprites/Default"));
-                        ren.material.color = new Color(0f, 0.5f, 1f, 0.4f);
-                    }
-
-                    activeHighlightObjects.Add(quad);
+                    CreateHighlight(tile, redColor, container);
                 }
+            }
+        }
+        private void CreateHighlight(Vector2Int tile, Color highlightColor,GameObject container)
+        {
+            Vector3 worldPos = GetWorldPositionFromTile(tile.x, tile.y);
+            worldPos.y = 0.05f;
+
+            if (movementHighlightPrefab != null)
+            {
+                GameObject highlightObj = Instantiate(movementHighlightPrefab, worldPos, Quaternion.identity, container.transform);
+
+                if (highlightObj.TryGetComponent<MeshRenderer>(out var ren))
+                {
+                    ren.material.color = highlightColor;
+                }
+
+                activeHighlightObjects.Add(highlightObj);
+            }
+            else
+            {
+                GameObject quad = GameObject.CreatePrimitive(PrimitiveType.Quad);
+                quad.transform.position = worldPos;
+                quad.transform.rotation = Quaternion.Euler(90, 0, 0);
+                quad.transform.localScale = new Vector3(sizeOfTile, sizeOfTile, 1f);
+                quad.transform.SetParent(container.transform);
+
+                if (quad.TryGetComponent<Collider>(out var col)) Destroy(col);
+                if (quad.TryGetComponent<MeshRenderer>(out var ren))
+                {
+                    ren.material = new Material(Shader.Find("Sprites/Default"));
+                    ren.material.color = highlightColor;
+                }
+
+                activeHighlightObjects.Add(quad);
             }
         }
 

@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using Assets.GameScripts.Model.Game.Players.BasicEnemy;
+using UnityEngine.InputSystem.iOS;
 
 public class UserGameController : MonoBehaviour
 {
@@ -134,14 +135,14 @@ public class UserGameController : MonoBehaviour
         {
             for (int z = enemyZoneStart; z < boardHeight; z++)
             {
-                // Csak az üres mezõket vesszük figyelembe
+
                 if (GetUnitAt(x, z) == null)
                 {
                     availableTiles.Add(new Vector2Int(x, z));
                 }
             }
         }
-        // 3. Mezõk megkeverése (Fisher-Yates shuffle)
+
         for (int i = 0; i < availableTiles.Count; i++)
         {
             Vector2Int temp = availableTiles[i];
@@ -150,7 +151,7 @@ public class UserGameController : MonoBehaviour
             availableTiles[randomIndex] = temp;
         }
 
-        // 4. Egységek lehelyezése a megkevert mezõkre
+
         int placeCount = Mathf.Min(enemyDeck.Count, availableTiles.Count);
 
         for (int i = 0; i < placeCount; i++)
@@ -159,7 +160,7 @@ public class UserGameController : MonoBehaviour
             Vector2Int tile = availableTiles[i];
 
             BaseUnit spawnedEnemy = BoardLayout.Instance.PlaceUnitAtTile(
-                tile.x,
+                tile.x,  
                 tile.y,
                 unitData.Faction,
                 unitData.UnitType,
@@ -168,13 +169,41 @@ public class UserGameController : MonoBehaviour
 
             if (spawnedEnemy != null)
             {
-                spawnedEnemy.Player = PlayerEnum.Black; // Ellenséges játékos beállítása
+                spawnedEnemy.Player = PlayerEnum.Black;
                 enemyunits.Add(spawnedEnemy);
             }
         }
 
         Debug.Log($"[UserGameController] Sikeresen lehelyezve {enemyunits.Count} ellenséges egység.");
     }
+
+    private void MoveEnemy()
+    {
+
+
+    }
+
+    public void TryAttack(BaseUnit attacker, int targetX, int targetZ)
+    {
+        BaseUnit targetUnit = GetUnitAt(targetX, targetZ);
+
+        if (attacker != null && targetUnit != null)
+        {
+            // Manhattan távolság ellenõrzése a Range (hatótáv) alapján
+            int distance = Mathf.Abs(attacker.TileX - targetX) + Mathf.Abs(attacker.TileZ - targetZ);
+
+            if (distance <= attacker.Range)
+            {
+                attacker.AttackEnemy(targetUnit);
+                attacker.Already_Moved = true;
+            }
+            else
+            {
+                Debug.LogWarning("A célpont kívül esik a hatótávon!");
+            }
+        }
+    }
+
 
     private void HandlePlacing(int x, int z)
     {
@@ -242,9 +271,9 @@ public class UserGameController : MonoBehaviour
 
     private void CalculateAndShowMovementRange(int startX, int startZ, int moveSpeed)
     {
-
-
         highlightedTiles.Clear();
+        List<Vector2Int> friendlyTiles = new List<Vector2Int>();
+        List<Vector2Int> enemyTiles = new List<Vector2Int>();
 
         int boardWidth = BoardLayout.Instance.Width;
         int boardHeight = BoardLayout.Instance.Height;
@@ -253,29 +282,45 @@ public class UserGameController : MonoBehaviour
         {
             for (int z = startZ - moveSpeed; z <= startZ + moveSpeed; z++)
             {
-                // Pálya határain belüli ellenõrzés
                 if (x >= 0 && x < boardWidth && z >= 0 && z < boardHeight)
                 {
-                    // Manhattan-távolság kiszámítása: |x1 - x2| + |z1 - z2|
                     int distance = Mathf.Abs(startX - x) + Mathf.Abs(startZ - z);
 
                     if (distance <= moveSpeed)
                     {
-                        // Csak üres mezõre lehet lépni (vagy a saját kezdõpozíciójára)
-                        if (GetUnitAt(x, z) == null || (x == startX && z == startZ))
+                        BaseUnit unitOnTile = GetUnitAt(x, z);
+                        Debug.Log(enemyunits.Count);
+                        // 1. Zöld: Üres mezõ
+                        if (unitOnTile == null)
                         {
                             highlightedTiles.Add(new Vector2Int(x, z));
+                        }
+                        // 2. Kék: Saját/Szövetséges egység (beleértve a saját kezdõpozícióját is)
+                        else if (friendlyunits.Contains(unitOnTile))
+                        {
+                            friendlyTiles.Add(new Vector2Int(x, z));
+                        }
+                        // 3. Piros: Ellenséges
+                        else if (enemyunits.Contains(unitOnTile))
+                        {
+                            enemyTiles.Add(new Vector2Int(x, z));
                         }
                     }
                 }
             }
         }
 
-        // Szólunk a BoardLayout-nak, hogy jelenítse meg a zónákat
+ 
         if (BoardLayout.Instance != null)
         {
-            BoardLayout.Instance.HighlightMovementTiles(highlightedTiles);
+            BoardLayout.Instance.HighlightMovementTiles(highlightedTiles, friendlyTiles, enemyTiles);
         }
+    }
+
+    private void TryAtackUnit() 
+    { 
+    
+    
     }
 
     public void MovingUnit(int targetX, int targetZ)
@@ -292,6 +337,21 @@ public class UserGameController : MonoBehaviour
             return;
         }
 
+        if (selectedUnitOnBoard.Already_Moved)
+        {
+            Debug.LogWarning($"{selectedUnitOnBoard.name} egység már mozgott ebben a körben!");
+            return;
+        }
+
+        BaseUnit targetUnit = GetUnitAt(targetX, targetZ);
+
+        if (targetUnit != null && enemyunits.Contains(targetUnit))
+        {
+            TryAttack(selectedUnitOnBoard, targetX, targetZ);
+            DeselectUnit();
+            return;
+        }
+
         Vector2Int targetPos = new Vector2Int(targetX, targetZ);
         if (!highlightedTiles.Contains(targetPos))
         {
@@ -299,15 +359,10 @@ public class UserGameController : MonoBehaviour
             return;
         }
 
-        if (selectedUnitOnBoard.Already_Moved!) 
-        {
-            Debug.LogWarning($"{selectedUnitOnBoard.name} uni már mozgott");
-            return;
-        }
         if (BoardLayout.Instance != null)
         {
             BoardLayout.Instance.MoveUnitOnBoard(selectedUnitOnBoard, targetX, targetZ);
-
+            selectedUnitOnBoard.Already_Moved = true; // Kijelöljük, hogy a körben már mozgott
             Debug.Log($"A(z) {selectedUnitOnBoard.name} sikeresen elmozdult a ({targetX}, {targetZ}) mezõre.");
 
             DeselectUnit();
@@ -346,7 +401,12 @@ public class UserGameController : MonoBehaviour
 
     public BaseUnit GetUnitAt(int x, int z)
     {
-        return friendlyunits.FirstOrDefault(u => u != null && u.TileX == x && u.TileZ == z);
+        BaseUnit baseunit;
+
+        baseunit = friendlyunits.FirstOrDefault(u => u != null && u.TileX == x && u.TileZ == z);
+        if (null != baseunit) return baseunit;
+        baseunit = enemyunits.FirstOrDefault(u => u != null && u.TileX == x && u.TileZ == z);
+        return baseunit;
     }
 
     private void ClearSelection()
