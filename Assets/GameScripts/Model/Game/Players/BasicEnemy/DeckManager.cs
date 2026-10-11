@@ -7,10 +7,7 @@ namespace Assets.GameScripts.Model.Game.Players.BasicEnemy
 {
     public class DeckManager 
     {
-        /// <summary>
-        /// Véletlenszerűen kiválaszt egyet az elérhető paklik közül.
-        /// </summary>
-        /// <returns>A kiválasztott pakli (FactionsEnum és UnitTypesEnum párok listája)</returns>
+
         public static List<(FactionsEnum Faction, UnitTypesEnum UnitType)> GetRandomDeck()
         {
             List<List<(FactionsEnum Faction, UnitTypesEnum UnitType)>> allDecks = new()

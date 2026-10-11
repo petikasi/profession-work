@@ -12,9 +12,4 @@ public class HellAdvancedMelee : BaseUnit
         Already_Moved = false;
     }
 
-    protected override void Die()
-    {
-        Debug.Log("Human Melee died");
-    }
-
 }

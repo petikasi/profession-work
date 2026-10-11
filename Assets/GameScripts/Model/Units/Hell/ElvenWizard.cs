@@ -13,10 +13,6 @@ public class HellWizard : BaseUnit
         Range = 15;
     }
 
-    protected override void Die()
-    {
-        Debug.Log("Human Melee died");
-    }
 
 
 

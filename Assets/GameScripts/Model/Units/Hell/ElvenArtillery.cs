@@ -13,10 +13,5 @@ public  class HellArtillery : BaseUnit
         Range = 40;
     }
 
-    protected override void Die()
-    {
-        Debug.Log("Human Melee died");
-    }
-
 
 }

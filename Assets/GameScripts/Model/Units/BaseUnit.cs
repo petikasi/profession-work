@@ -1,11 +1,11 @@
 using Assets.GameScripts.Model.Game.Enums;
 using Assets.GameScripts.ViewModel.Game.UnitSelectorCanvas;
+using System;
+using System.Xml.Linq;
 using UnityEngine;
-using static UnityEngine.Rendering.DebugUI;
 
-
-    public abstract class BaseUnit : MonoBehaviour
-    {
+public abstract class BaseUnit : MonoBehaviour
+{
     public int HealthPoint { get; protected set; }
     public int AttackDamage { get; protected set; }
     public int Defense { get; protected set; }
@@ -20,8 +20,10 @@ using static UnityEngine.Rendering.DebugUI;
     public int TileZ { get; set; }
 
     public bool Already_Moved { get; set; }
-
     public bool IsRanged { get; set; }
+
+    // Esemény a halál jelzésére (átadja magát az elhalálozott egységet)
+    public event Action<BaseUnit> OnUnitDied;
 
     protected abstract void InitializeStats();
 
@@ -30,10 +32,6 @@ using static UnityEngine.Rendering.DebugUI;
         InitializeStats();
     }
 
-    /// <summary>
-    /// Megtámad egy ellenséges egységet.
-    /// </summary>
-    /// <param name="target">A megtámadandó célpont egység</param>
     public virtual void AttackEnemy(BaseUnit target)
     {
         if (target == null) return;
@@ -45,12 +43,12 @@ using static UnityEngine.Rendering.DebugUI;
         }
 
         Debug.Log($"{name} megtámadta a következőt: {target.name} (Sebzés: {AttackDamage})");
-
         target.TakeDamage(AttackDamage);
     }
 
     public virtual void TakeDamage(int amount)
     {
+        // Javítva: amount - Defense
         int rawDamage = Mathf.Max(0, amount - Defense);
 
         if (Shield > 0)
@@ -68,7 +66,6 @@ using static UnityEngine.Rendering.DebugUI;
         }
 
         HealthPoint -= rawDamage;
-
         Debug.Log($"{name} sebződött: {rawDamage}. Maradt HP: {HealthPoint}, Shield: {Shield}");
 
         if (HealthPoint <= 0)
@@ -87,7 +84,11 @@ using static UnityEngine.Rendering.DebugUI;
         Shield += amount;
     }
 
-    protected abstract void Die();
+    public virtual void Die()
+    {
+        Debug.Log($"{name} meghalt!");
 
+        // Kiváltjuk az eseményt a feliratkozók felé (pl. BoardLayout)
+        OnUnitDied?.Invoke(this);
+    }
 }
-

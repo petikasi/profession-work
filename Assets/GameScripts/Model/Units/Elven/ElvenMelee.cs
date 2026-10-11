@@ -13,10 +13,5 @@ public class ElvenMelee : BaseUnit
         Already_Moved = false;
     }
 
-    protected override void Die()
-    {
-        Debug.Log("Human Melee died");
-    }
-
 
 }

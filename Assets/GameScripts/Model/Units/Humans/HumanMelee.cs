@@ -13,10 +13,6 @@ public class HumanMelee : BaseUnit
         Range = 1;
     }
 
-    protected override void Die()
-    {
-        Debug.Log("Human Melee died");
-    }
 
 
 }

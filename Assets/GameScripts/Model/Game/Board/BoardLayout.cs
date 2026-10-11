@@ -184,8 +184,11 @@ namespace Assets.GameScripts.Model.Game.Board {
         private void GenerateOneBigFloor(int tileCountX, int tileCountZ, float tileWidth)
         {
             floor = new("GrandFloor");
+            floor.layer = LayerMask.NameToLayer("Floor");
             floor.transform.parent = transform;
             floor.isStatic = true;
+
+            Debug.Log(floor.layer);
 
             MeshFilter meshFilter = floor.AddComponent<MeshFilter>();
             MeshRenderer meshRenderer = floor.AddComponent<MeshRenderer>();
@@ -292,16 +295,13 @@ namespace Assets.GameScripts.Model.Game.Board {
             }
 
             Vector3 spawnPos = GetWorldPositionFromTile(x, z);
-
             GameObject unitObj = Instantiate(entry.Prefab, spawnPos, Quaternion.identity);
             unitObj.transform.rotation = Quaternion.Euler(-90, 0, 0);
 
             BaseUnit unitScript = unitObj.GetComponent(entry.ScriptType) as BaseUnit;
-
             if (unitScript == null)
             {
                 unitScript = unitObj.AddComponent(entry.ScriptType) as BaseUnit;
-                Debug.Log($"BoardLayout: A script nem volt rajta a Prefabon, ezért dinamikusan hozzáadtam: {entry.ScriptType.Name}");
             }
 
             if (unitScript != null)
@@ -309,9 +309,26 @@ namespace Assets.GameScripts.Model.Game.Board {
                 unitScript.TileX = x;
                 unitScript.TileZ = z;
                 unitScript.MyCardPanel = cardPanel;
+
+                unitScript.OnUnitDied += HandleUnitDied;
             }
 
             return unitScript;
+        }
+
+        private void HandleUnitDied(BaseUnit deadUnit)
+        {
+            if (deadUnit == null) return;
+
+            deadUnit.OnUnitDied -= HandleUnitDied;
+
+            if (activeMovements.TryGetValue(deadUnit.transform, out Coroutine coroutine))
+            {
+                if (coroutine != null) StopCoroutine(coroutine);
+                activeMovements.Remove(deadUnit.transform);
+            }
+
+            Destroy(deadUnit.gameObject);
         }
 
         private void FitCameraToMap()

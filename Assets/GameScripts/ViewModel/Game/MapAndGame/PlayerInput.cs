@@ -8,19 +8,25 @@ namespace Assets.GameScripts.ViewModel.Game.MapAndGame
 {
     public class PlayerInput : MonoBehaviour
     {
-        void Update()
+        private LayerMask floorLayer;
+
+        private void Awake()
+        {
+            floorLayer = LayerMask.GetMask("Floor");
+        }
+
+
+        private void Update()
         {
             if (Mouse.current == null) return;
 
-            // Bal klikk érzékelése
             if (Mouse.current.leftButton.wasPressedThisFrame)
             {
-                HandleInput(isRightClick: false);
+                HandleInput(false);
             }
-            // Jobb klikk érzékelése
             else if (Mouse.current.rightButton.wasPressedThisFrame)
             {
-                HandleInput(isRightClick: true);
+                HandleInput(true);
             }
         }
 
@@ -31,40 +37,41 @@ namespace Assets.GameScripts.ViewModel.Game.MapAndGame
                 return;
             }
 
+            Debug.Log(isRightClick);
+
             Vector2 mousePos = Mouse.current.position.ReadValue();
             Ray ray = Camera.main.ScreenPointToRay(mousePos);
 
             if (Physics.Raycast(ray, out RaycastHit hit))
             {
-                if (hit.collider.name == "GrandFloor")
+                int tileSize = BoardLayout.Instance.GET_SIZE;
+                int tileX = Mathf.FloorToInt(hit.point.x / tileSize);
+                int tileZ = Mathf.FloorToInt(hit.point.z / tileSize);
+
+                Debug.Log(tileX);
+                Debug.Log(tileZ);
+
+                if (UserGameController.Instance == null)
                 {
-                    int tileSize = BoardLayout.Instance.GET_SIZE;
-                    int tileX = Mathf.FloorToInt(hit.point.x / tileSize);
-                    int tileZ = Mathf.FloorToInt(hit.point.z / tileSize);
+                    Debug.LogError("PlayerInput: UserGameController.Instance NULL!");
+                    return;
+                }
 
-                    if (UserGameController.Instance == null)
+                GamePhaseEnum currentPhase = UserGameController.Instance.OwnPlayer.CurrentGamePhase;
+
+                if (currentPhase == GamePhaseEnum.Deployment)
+                {
+                    UserGameController.Instance.CallPlacing(tileX, tileZ, isRightClick);
+                }
+                else if (currentPhase == GamePhaseEnum.Movement)
+                {
+                    if (isRightClick)
                     {
-                        Debug.LogError("PlayerInput: UserGameController.Instance NULL!");
-                        return;
+                        UserGameController.Instance.DeselectUnit();
                     }
-
-                    GamePhaseEnum currentPhase = UserGameController.Instance.OwnPlayer.CurrentGamePhase;
-
-                    if (currentPhase == GamePhaseEnum.Deployment)
+                    else
                     {
-                        UserGameController.Instance.CallPlacing(tileX, tileZ, isRightClick);
-                    }
-                    else if (currentPhase == GamePhaseEnum.Movement)
-                    {
-                        if (!isRightClick)
-                        {
-                            UserGameController.Instance.SelectUnitToMove(tileX, tileZ);
-                        }
-                        else
-                        {
-     
-                            UserGameController.Instance.MovingUnit(tileX, tileZ);
-                        }
+                        UserGameController.Instance.HandleMovementPhaseClick(tileX, tileZ);
                     }
                 }
             }

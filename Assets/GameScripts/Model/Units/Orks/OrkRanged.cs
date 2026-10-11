@@ -13,10 +13,6 @@ public class OrkRanged : BaseUnit
         Range = 20;
     }
 
-    protected override void Die()
-    {
-        Debug.Log("Human Melee died");
-    }
 
 
 
